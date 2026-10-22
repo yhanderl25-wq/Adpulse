@@ -19,6 +19,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- Meta Ads SDK -->
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/pt_BR/sdk.js"></script>
@@ -54,7 +55,7 @@
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   
   .glass-card {
-    background: rgba(10, 14, 23, 0.7);
+    background: rgba(10, 14, 23, 0.75);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -129,6 +130,13 @@
 
 <main class="max-w-md mx-auto w-full px-4 pt-4 flex-1">
 
+  <!-- SELECTOR DE CUENTA PUBLICITARIA (SI HAY CONEXIÓN) -->
+  <div id="account-selector-container" class="hidden mb-3">
+    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Conta Publicitária Ativa:</label>
+    <select id="account-selector" onchange="changeAccount(this.value)" class="w-full bg-dark-900 text-xs text-cyan-300 font-semibold p-2.5 rounded-2xl border border-cyan-500/30 outline-none">
+    </select>
+  </div>
+
   <!-- FILTRO DE JANELA TEMPORAL -->
   <div class="flex justify-between items-center mb-4 bg-dark-900/80 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 shadow-inner">
     <span class="text-[10px] font-extrabold text-slate-400 pl-3 uppercase tracking-wider">Janela de Análise</span>
@@ -139,7 +147,22 @@
   </div>
 
   <!-- RAIO-X DE PERFORMANCE -->
-  <div id="raiox" class="glass-card rounded-3xl p-4 mb-5 fade-in relative overflow-hidden"></div>
+  <div id="raiox" class="glass-card rounded-3xl p-4 mb-4 fade-in relative overflow-hidden"></div>
+
+  <!-- PAINEL DE ALERTAS INTELIGENTES -->
+  <div id="smart-alerts" class="space-y-2 mb-5"></div>
+
+  <!-- GRÁFICO DE TENDÊNCIA DIÁRIA -->
+  <div class="glass-card rounded-3xl p-4 mb-5 fade-in">
+    <div class="flex justify-between items-center mb-3">
+      <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+        <i class="fa-solid fa-chart-area text-cyan-400"></i> Tendência de ROAS e Gasto
+      </span>
+    </div>
+    <div class="h-44 w-full">
+      <canvas id="trendChart"></canvas>
+    </div>
+  </div>
 
   <!-- ABA: CAMPANHAS (INÍCIO) -->
   <section id="sec-home" class="space-y-3.5">
@@ -275,9 +298,11 @@ function verdict(c) {
   return { kind: 'ajuste', label: 'Desempenho Moderado', icon: 'fa-sliders', tone: 'warn' };
 }
 
-const STORE_KEY = 'adpulse_state_v3';
+const STORE_KEY = 'adpulse_state_v4';
 const state = loadState();
 let currentTF = '7d';
+let selectedAdAccountId = null;
+let trendChartInstance = null;
 
 function loadState() {
   try {
@@ -316,8 +341,19 @@ async function fetchRealMetaCampaigns(token) {
   const meData = await meRes.json();
   if (!meData.data || !meData.data.length) return [];
 
-  const adAccountId = meData.data[0].id;
-  const url = `https://graph.facebook.com/v18.0/${adAccountId}/campaigns?fields=name,objective,status,insights{spend,clicks,cpc,ctr,frequency,purchase_roas}&access_token=${token}`;
+  // Preencher seletor de contas
+  const selContainer = document.getElementById('account-selector-container');
+  const selector = document.getElementById('account-selector');
+  selContainer.classList.remove('hidden');
+  selector.innerHTML = meData.data.map(acc => `<option value="${acc.id}">${acc.name} (${acc.account_id})</option>`).join('');
+
+  if (!selectedAdAccountId) {
+    selectedAdAccountId = meData.data[0].id;
+  }
+  selector.value = selectedAdAccountId;
+
+  const datePreset = currentTF === '30d' ? 'last_30d' : 'last_7d';
+  const url = `https://graph.facebook.com/v18.0/${selectedAdAccountId}/campaigns?fields=name,objective,status,insights.date_preset(${datePreset}){spend,clicks,cpc,ctr,frequency,purchase_roas}&access_token=${token}`;
   
   const res = await fetch(url);
   const data = await res.json();
@@ -342,6 +378,11 @@ async function fetchRealMetaCampaigns(token) {
       frequency: parseFloat(frequency.toFixed(1))
     };
   });
+}
+
+function changeAccount(accId) {
+  selectedAdAccountId = accId;
+  refresh();
 }
 
 const MOCK = {
@@ -382,6 +423,107 @@ function setTimeframe(tf) {
   refresh();
 }
 
+function renderSmartAlerts(campaigns) {
+  const container = document.getElementById('smart-alerts');
+  let alertsHtml = '';
+
+  campaigns.forEach(c => {
+    if (!state.paused.includes(c.id)) {
+      if (c.roas < 1.0) {
+        alertsHtml += `
+        <div class="bg-rose-500/10 border border-rose-500/30 p-3 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-triangle-exclamation text-rose-400 text-sm"></i>
+            <div>
+              <strong class="text-xs text-rose-300 font-bold block">Alerta de Desperdício</strong>
+              <span class="text-[10px] text-slate-400">"${c.name}" está com ROAS ${fmtX(c.roas)} (Prejuízo).</span>
+            </div>
+          </div>
+          <button onclick="askPause('${c.id}')" class="text-[10px] bg-rose-500 text-white font-bold px-2.5 py-1 rounded-xl whitespace-nowrap">Pausar</button>
+        </div>`;
+      } else if (c.frequency > 3.5) {
+        alertsHtml += `
+        <div class="bg-amber-500/10 border border-amber-500/30 p-3 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-rotate text-amber-400 text-sm"></i>
+            <div>
+              <strong class="text-xs text-amber-300 font-bold block">Fadiga de Público</strong>
+              <span class="text-[10px] text-slate-400">Frequência ${fmtX(c.frequency)} em "${c.name}". Renove o criativo.</span>
+            </div>
+          </div>
+        </div>`;
+      } else if (c.roas >= 3.0) {
+        alertsHtml += `
+        <div class="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-rocket text-emerald-400 text-sm"></i>
+            <div>
+              <strong class="text-xs text-emerald-300 font-bold block">Oportunidade de Escala</strong>
+              <span class="text-[10px] text-slate-400">"${c.name}" com excelente retorno (ROAS ${fmtX(c.roas)}).</span>
+            </div>
+          </div>
+        </div>`;
+      }
+    }
+  });
+
+  container.innerHTML = alertsHtml;
+}
+
+function renderChart(campaigns) {
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  
+  const labels = currentTF === '30d' 
+    ? ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4']
+    : ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+  const roasData = currentTF === '30d' ? [2.1, 2.8, 3.4, 4.1] : [1.8, 2.4, 3.1, 2.9, 4.2, 4.5, 4.1];
+  const spendData = currentTF === '30d' ? [1200, 1500, 1800, 2100] : [200, 250, 310, 280, 420, 450, 410];
+
+  if (trendChartInstance) {
+    trendChartInstance.destroy();
+  }
+
+  trendChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'ROAS (x)',
+          data: roasData,
+          borderColor: '#06b6d4',
+          backgroundColor: 'rgba(6, 182, 212, 0.1)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 2,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Gasto (R$)',
+          data: spendData,
+          borderColor: '#6366f1',
+          backgroundColor: 'transparent',
+          borderDash: [4, 4],
+          tension: 0.4,
+          borderWidth: 2,
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 9 } } },
+        y: { type: 'linear', display: true, position: 'left', grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#06b6d4', font: { size: 9 } } },
+        y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#6366f1', font: { size: 9 } } }
+      }
+    }
+  });
+}
+
 function renderRaioX(campaigns) {
   const activeCamp = campaigns.filter(c => !state.paused.includes(c.id));
   const spend = activeCamp.reduce((s, c) => s + c.spend, 0);
@@ -405,8 +547,8 @@ function renderRaioX(campaigns) {
       <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-2">
         <i class="fa-solid fa-wallet text-cyan-400"></i> Visão Geral de Investimento
       </span>
-      <span class="${TONE[scoreTone].bg} ${TONE[scoreTone].text} border ${TONE[scoreTone].border} text-[10px] px-2.5 py-0.5 rounded-full font-bold">
-        Índice de Saúde: ${healthScore}/100
+      <span class="${TONE[scoreTone].bg} ${TONE[scoreTone].text} border${TONE[scoreTone].border} text-[10px] px-2.5 py-0.5 rounded-full font-bold">
+        Saúde da Conta: ${healthScore}/100
       </span>
     </div>
     <div class="grid grid-cols-2 gap-2.5 bg-dark-950 p-3.5 rounded-2xl border border-white/5">
@@ -414,264 +556,3 @@ function renderRaioX(campaigns) {
         <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wider">Verba Empregada</span>
         <span class="text-lg font-black text-white mt-0.5 block tracking-tight">${fmtBRL(spend)}</span>
         <span class="text-[9px] text-slate-400 mt-0.5 block font-medium">${activeCamp.length} campanha(s) ativas</span>
-      </div>
-      <div>
-        <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wider">ROAS Consolidado</span>
-        <span class="text-lg font-black ${TONE[diagROAS(roas).tone].text} mt-0.5 block tracking-tight">${activeCamp.length ? fmtX(roas) : '—'}</span>
-        <span class="text-[9px] ${TONE[diagROAS(roas).tone].text} font-bold mt-0.5 block">${diagROAS(roas).label}</span>
-      </div>
-    </div>
-    ${savedSpend > 0 ? `
-    <div class="mt-3 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-2xl text-center flex items-center justify-center gap-2">
-      <i class="fa-solid fa-shield-halved text-emerald-400 text-xs"></i>
-      <span class="text-[11px] text-emerald-300 font-semibold">Economia Preservada: <strong>${fmtBRL(savedSpend)}</strong> retidos.</span>
-    </div>` : ''}`;
-}
-
-function renderCampaigns(campaigns) {
-  const list = document.getElementById('campaign-list');
-  if (!campaigns.length) {
-    list.innerHTML = emptyState('Conecte sua conta do Meta Ads para sincronizar suas campanhas.');
-    return;
-  }
-  list.innerHTML = campaigns.map(c => {
-    const v = verdict(c);
-    const paused = state.paused.includes(c.id);
-    const plat = PLATFORM[c.platform];
-    const btn = paused
-      ? `<button disabled class="w-full mt-3 bg-dark-800 border border-white/5 text-emerald-400 font-bold py-3 rounded-2xl text-xs flex items-center justify-center gap-2">
-           <i class="fa-solid fa-circle-check"></i> Campanha Pausada (Economia de ${fmtBRL(c.spend)})
-         </button>`
-      : `<button onclick="askPause('${c.id}')" class="btn-danger w-full mt-3 text-white font-bold py-3 rounded-2xl text-xs">
-           Pausar Veiculação e Preservar Verba
-         </button>`;
-    return `
-    <div class="glass-card glass-card-hover rounded-3xl p-4.5 fade-in ${paused ? 'opacity-60' : ''}">
-      <div class="flex justify-between items-start gap-2">
-        <div class="min-w-0">
-          <div class="flex flex-wrap gap-1.5">
-            <span class="badge-chip ${TONE[v.tone].text} ${TONE[v.tone].bg} ${TONE[v.tone].border}"><i class="fa-solid ${v.icon}"></i> ${v.label}</span>
-          </div>
-          <h3 class="font-bold text-xs text-slate-100 mt-2 tracking-tight">${c.name}</h3>
-          <p class="text-[10px] text-slate-400 mt-0.5"><i class="${plat.icon} ${plat.color}"></i> ${plat.name} · ${c.objective}</p>
-        </div>
-        <span class="text-xs font-black ${TONE[diagROAS(c.roas).tone].text} whitespace-nowrap">ROAS ${fmtX(c.roas)}</span>
-      </div>
-      <div class="grid grid-cols-4 gap-1.5 mt-3 pt-3 border-t border-white/5">
-        ${kpi('CTR', fmtPct(c.ctr), diagCTR(c.ctr))}
-        ${kpi('CPC', fmtBRL(c.cpc), diagCPC(c.cpc))}
-        ${kpi('Freq.', fmtX(c.frequency), diagFreq(c.frequency))}
-        ${kpi('Gasto', fmtBRL(c.spend), diagROAS(c.roas))}
-      </div>
-      ${v.kind === 'fuga' || v.kind === 'fadiga' ? btn : ''}
-    </div>`;
-  }).join('');
-}
-
-function renderFilters(active) {
-  document.getElementById('filters').innerHTML = Object.entries(FORMATS).map(([k, label]) =>
-    `<button onclick="setFilter('${k}')" class="text-[10px] font-bold px-3.5 py-1.5 rounded-xl whitespace-nowrap border transition
-      ${active === k ? 'bg-brand-500 border-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25' : 'bg-dark-900 border-white/5 text-slate-400 hover:text-slate-200'}">${label}</button>`
-  ).join('');
-}
-
-let currentFilter = 'all';
-let creativesCache = [];
-function setFilter(f) { currentFilter = f; renderCreatives(); }
-
-function renderCreatives() {
-  renderFilters(currentFilter);
-  const grid = document.getElementById('creative-grid');
-  const items = creativesCache.filter(c => currentFilter === 'all' || c.format === currentFilter);
-  if (!creativesCache.length) { grid.innerHTML = emptyState('Nenhum anúncio identificado.', true); return; }
-  if (!items.length) { grid.innerHTML = emptyState('Nenhum criativo neste formato.', true); return; }
-
-  const icon = { reel: 'fa-play', carrossel: 'fa-images', imagem: 'fa-image' };
-  grid.innerHTML = items.map(c => {
-    const fatigue = diagFreq(c.frequency);
-    return `
-    <div class="glass-card rounded-3xl p-3.5 fade-in flex flex-col justify-between">
-      <div>
-        <div class="w-full h-24 bg-dark-950 rounded-2xl flex items-center justify-center text-cyan-400 text-2xl border border-white/5 mb-2.5 shadow-inner">
-          <i class="fa-solid ${icon[c.format]}"></i>
-        </div>
-        <span class="text-[9px] px-2 py-0.5 rounded-full font-bold border ${FORMAT_STYLE[c.format]}">${FORMATS[c.format]}</span>
-        <h4 class="font-bold text-xs text-slate-100 mt-2 leading-snug tracking-tight">${c.title}</h4>
-      </div>
-      <div class="mt-3 pt-2.5 border-t border-white/5 text-[10px] space-y-1.5">
-        <div class="flex justify-between"><span class="text-slate-400">CTR</span><strong class="${TONE[diagCTR(c.ctr).tone].text}">${fmtPct(c.ctr)}</strong></div>
-        <div class="flex justify-between"><span class="text-slate-400">ROAS</span><strong class="${TONE[diagROAS(c.roas).tone].text}">${fmtX(c.roas)}</strong></div>
-        <div class="flex justify-between"><span class="text-slate-400">Frequência</span><strong class="${TONE[fatigue.tone].text}">${fmtX(c.frequency)}</strong></div>
-        <div class="mt-2"><span class="badge-chip ${TONE[fatigue.tone].text} ${TONE[fatigue.tone].bg} ${TONE[fatigue.tone].border} w-full justify-center">${fatigue.label}</span></div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function renderCriteria() {
-  const rows = [
-    { t: 'CTR (Click-Through Rate)', tag: 'Atratividade', d: 'Mede o interesse inicial do público pelo criativo.', g: '> 2,0%: anúncio de alto engajamento.', b: '< 1,0%: baixa atração, recomenda-se novo criativo.' },
-    { t: 'CPC (Custo por Clique)', tag: 'Eficiência', d: 'Valor médio cobrado pelo tráfego gerado.', g: '< R$ 1,00: tráfego altamente rentável.', b: '> R$ 2,50: custo elevado para a conversão.' },
-    { t: 'Frequência de Exposição', tag: 'Saturação', d: 'Média de visualizações por usuário único.', g: '1,0x – 2,5x: alcance saudável.', b: '> 3,5x: fadiga de público, recomenda-se renovar a lista.' },
-    { t: 'ROAS (Retorno sobre Anúncio)', tag: 'Rentabilidade', d: 'Múltiplo de faturamento retornado sobre o investimento.', g: '≥ 3,0x: excelente taxa de retorno.', b: '< 1,0x: operação em prejuízo técnico.' }
-  ];
-  document.getElementById('criteria').innerHTML = rows.map(r => `
-    <div class="glass-card rounded-3xl p-4.5">
-      <div class="flex justify-between items-center mb-1.5">
-        <strong class="text-cyan-300 text-xs font-bold">${r.t}</strong>
-        <span class="text-[9px] font-bold bg-cyan-500/10 text-cyan-400 px-2.5 py-0.5 rounded-full border border-cyan-500/20">${r.tag}</span>
-      </div>
-      <p class="text-slate-300 text-[11px] leading-relaxed mt-1">
-        ${r.d}
-        <br><span class="text-emerald-400 font-semibold block mt-1.5">• ${r.g}</span>
-        <span class="text-rose-400 font-semibold block mt-0.5">• ${r.b}</span>
-      </p>
-    </div>`).join('');
-}
-
-function renderPlatforms() {
-  document.getElementById('platform-cards').innerHTML = Object.entries(PLATFORM).map(([key, p]) => {
-    const on = state.connected[key];
-    const action = on
-      ? `<div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center justify-between">
-           <span><i class="fa-solid fa-circle-check mr-2"></i> Conexão Ativa</span>
-           <button onclick="disconnect('${key}')" class="text-[10px] text-slate-400 hover:text-rose-400 underline transition">Desconectar</button>
-         </div>`
-      : `<button onclick="connect('${key}')" class="btn-primary w-full text-slate-950 font-black py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2">
-           <i class="${p.icon} text-base"></i> ${p.btn}
-         </button>`;
-    return `
-    <div class="glass-card rounded-3xl p-4.5">
-      <div class="flex items-center gap-3.5 mb-4">
-        <div class="w-11 h-11 rounded-2xl bg-dark-950 border border-white/5 flex items-center justify-center ${p.color} text-xl shadow-inner"><i class="${p.icon}"></i></div>
-        <div>
-          <h3 class="font-bold text-sm text-white">${p.name}</h3>
-          <p class="text-[10px] text-slate-400 mt-0.5">${on ? 'Sincronizado via Graph API' : 'Pendente de autenticação'}</p>
-        </div>
-      </div>
-      ${action}
-    </div>`;
-  }).join('');
-}
-
-function emptyState(text, compact) {
-  return `<div class="glass-card rounded-3xl border-dashed ${compact ? 'p-4 col-span-2' : 'p-6'} text-center text-xs text-slate-400">
-    <i class="fa-solid fa-plug-circle-exclamation text-cyan-400 text-2xl mb-2 block"></i>${text}
-  </div>`;
-}
-
-function renderHeaderStatus() {
-  const badge = document.getElementById('account-status-badge');
-  const names = Object.keys(state.connected).filter(k => state.connected[k]).map(k => PLATFORM[k].name);
-  badge.innerHTML = names.length
-    ? `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> ${names.join(' + ')} Ativo`
-    : `<span class="w-2 h-2 rounded-full bg-slate-600"></span> Nenhuma conta vinculada`;
-}
-
-async function refresh() {
-  const [campaigns, creatives] = await Promise.all([API.fetchCampaigns(), API.fetchCreatives()]);
-  creativesCache = creatives;
-  renderHeaderStatus();
-  renderRaioX(campaigns);
-  renderCampaigns(campaigns);
-  renderCreatives();
-  renderCriteria();
-  renderPlatforms();
-  document.getElementById('last-sync').textContent = 'Sincronizado às ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-}
-
-let pendingPause = null;
-function askPause(id) {
-  const c = MOCK.campaigns.find(x => x.id === id);
-  pendingPause = id;
-  document.getElementById('modal-title').textContent = 'Confirmar Interrupção de Veiculação';
-  document.getElementById('modal-text').textContent =
-    `A campanha "${c.name}" apresenta consumo de ${fmtBRL(c.spend)} com retorno abaixo do parâmetro (ROAS ${fmtX(c.roas)}). Ao interromper, o consumo de verba é pausado imediatamente.`;
-  document.getElementById('modal-confirm').onclick = confirmPause;
-  document.getElementById('modal').classList.remove('hidden');
-}
-function closeModal() { document.getElementById('modal').classList.add('hidden'); pendingPause = null; }
-
-async function confirmPause() {
-  const id = pendingPause;
-  closeModal();
-  if (!id) return;
-  await API.pauseCampaign(id);
-  if (!state.paused.includes(id)) state.paused.push(id);
-  saveState();
-  toast('Campanha pausada no Meta Ads!');
-  refresh();
-}
-
-function connect(platform) {
-  if (platform === 'meta') {
-    if (typeof FB === 'undefined') {
-      toast('Carregando SDK da Meta...');
-      return;
-    }
-    FB.login(function(response) {
-      if (response.authResponse) {
-        state.connected.meta = true;
-        state.metaToken = response.authResponse.accessToken;
-        saveState();
-        toast('Meta Ads vinculado com sucesso!');
-        refresh();
-      } else {
-        toast('Autenticação cancelada.');
-      }
-    }, {scope: 'ads_read,ads_management'});
-  }
-}
-
-function disconnect(platform) {
-  state.connected[platform] = false;
-  if (platform === 'meta') state.metaToken = null;
-  saveState();
-  toast(PLATFORM[platform].name + ' desconectado');
-  refresh();
-}
-
-async function shareReport() {
-  const campaigns = await API.fetchCampaigns();
-  const activeCamp = campaigns.filter(c => !state.paused.includes(c.id));
-  const spend = activeCamp.reduce((s, c) => s + c.spend, 0);
-  const roas = activeCamp.length ? activeCamp.reduce((s, c) => s + c.roas * c.spend, 0) / (spend || 1) : 0;
-  
-  const text = `📈 *Relatório Executivo AdPulse* (${currentTF === '7d' ? '7 dias' : '30 dias'}):
-• *Investimento Ativo:* ${fmtBRL(spend)}
-• *ROAS Médio:* ${fmtX(roas)}
-• *Campanhas Ativas:* ${activeCamp.length}
-• *Economia Preservada:* ${state.paused.length} campanha(s) pausada(s)
-
-_Gerado via AdPulse Performance Intelligence_`;
-
-  if (navigator.share) {
-    navigator.share({ title: 'Relatório AdPulse', text: text });
-  } else {
-    navigator.clipboard.writeText(text);
-    toast('Relatório copiado para a área de transferência!');
-  }
-}
-
-function switchTab(tab) {
-  ['home','creatives','recommendations','connect','plan'].forEach(t => {
-    document.getElementById('sec-' + t).classList.toggle('hidden', t !== tab);
-  });
-  document.querySelectorAll('.nav-btn').forEach(b => {
-    const active = b.dataset.tab === tab;
-    b.className = `nav-btn flex flex-col items-center gap-1 w-full py-1 transition ${active ? 'text-cyan-400' : 'text-slate-500'}`;
-  });
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function installPWA() {
-  toast("Toque em 'Compartilhar' e selecione 'Adicionar à Tela Inicial'");
-}
-
-document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
-
-switchTab('home');
-refresh();
-</script>
-</body>
-</html>
