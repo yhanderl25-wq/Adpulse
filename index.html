@@ -20,9 +20,6 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<!-- Meta Ads SDK -->
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/pt_BR/sdk.js"></script>
-
 <script>
   tailwind.config = {
     darkMode: 'class',
@@ -54,7 +51,7 @@
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   
   .glass-card {
-    background: rgba(10, 14, 23, 0.75);
+    background: rgba(10, 14, 23, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -103,7 +100,7 @@
 <body class="text-slate-100 font-sans antialiased min-h-screen flex flex-col pb-24">
 
 <!-- HEADER PRINCIPAL -->
-<header class="bg-dark-900/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-40 px-4 py-3.5 flex items-center justify-between">
+<header class="bg-dark-900/90 backdrop-blur-xl border-b border-white/15 sticky top-0 z-40 px-4 py-3.5 flex items-center justify-between">
   <div class="flex items-center gap-3">
     <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25 border border-white/20">
       <i class="fa-solid fa-chart-line text-base"></i>
@@ -113,7 +110,7 @@
         AdPulse <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">PRO</span>
       </h1>
       <p id="account-status-badge" class="text-[10px] text-slate-400 font-medium flex items-center gap-1.5 mt-0.5">
-        <span class="w-2 h-2 rounded-full bg-slate-600"></span> Nenhuma conta vinculada
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Modo Simulação Ativo
       </p>
     </div>
   </div>
@@ -129,15 +126,8 @@
 
 <main class="max-w-md mx-auto w-full px-4 pt-4 flex-1">
 
-  <!-- SELECTOR DE CUENTA PUBLICITARIA (SI HAY CONEXIÓN) -->
-  <div id="account-selector-container" class="hidden mb-3">
-    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Conta Publicitária Ativa:</label>
-    <select id="account-selector" onchange="changeAccount(this.value)" class="w-full bg-dark-900 text-xs text-cyan-300 font-semibold p-2.5 rounded-2xl border border-cyan-500/30 outline-none">
-    </select>
-  </div>
-
   <!-- FILTRO DE JANELA TEMPORAL -->
-  <div class="flex justify-between items-center mb-4 bg-dark-900/80 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 shadow-inner">
+  <div class="flex justify-between items-center mb-4 bg-dark-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 shadow-inner">
     <span class="text-[10px] font-extrabold text-slate-400 pl-3 uppercase tracking-wider">Janela de Análise</span>
     <div class="flex gap-1">
       <button onclick="setTimeframe('7d')" id="tf-7d" class="text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition bg-brand-500 text-slate-950 shadow-lg shadow-cyan-500/25">Últimos 7d</button>
@@ -151,13 +141,13 @@
   <!-- PAINEL DE ALERTAS INTELIGENTES -->
   <div id="smart-alerts" class="space-y-2 mb-4"></div>
 
-  <!-- GRÁFICO DE TENDÊNCIA DIÁRIA (SVG NATIVO ULTRA RÁPIDO) -->
+  <!-- GRÁFICO DE TENDÊNCIA DIÁRIA (SVG NATIVO) -->
   <div class="glass-card rounded-3xl p-4 mb-5 fade-in">
     <div class="flex justify-between items-center mb-3">
       <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-2">
         <i class="fa-solid fa-chart-area text-cyan-400"></i> Tendência de ROAS e Gasto
       </span>
-      <span class="text-[9px] text-slate-500 font-bold">Desempenho Diário</span>
+      <span class="text-[9px] text-slate-400 font-bold">Desempenho Diário</span>
     </div>
     <div id="svg-chart-container" class="h-36 w-full flex items-end"></div>
   </div>
@@ -168,7 +158,7 @@
       <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
         <i class="fa-solid fa-layer-group text-cyan-400"></i> Campanhas em Monitoramento
       </h2>
-      <span class="text-[10px] text-slate-500 font-medium" id="last-sync">—</span>
+      <span class="text-[10px] text-slate-400 font-medium" id="last-sync">—</span>
     </div>
     <div id="campaign-list" class="space-y-3.5"></div>
   </section>
@@ -201,7 +191,18 @@
       <h3 class="text-base font-bold text-slate-100">Integração de Contas de Anúncios</h3>
       <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">Conecte sua conta do Meta Ads para sincronização automática de métricas via SDK Oficial.</p>
     </div>
-    <div id="platform-cards" class="space-y-3.5"></div>
+    <div class="glass-card rounded-3xl p-4.5">
+      <div class="flex items-center gap-3.5 mb-4">
+        <div class="w-11 h-11 rounded-2xl bg-dark-950 border border-white/5 flex items-center justify-center text-blue-400 text-xl shadow-inner"><i class="fa-brands fa-facebook"></i></div>
+        <div>
+          <h3 class="font-bold text-sm text-white">Meta Ads Sandbox</h3>
+          <p class="text-[10px] text-slate-400 mt-0.5">Ambiente de testes ativo</p>
+        </div>
+      </div>
+      <div class="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-2xl text-cyan-300 text-xs font-semibold text-center">
+        <span><i class="fa-solid fa-circle-check mr-2"></i> Pronto para Auditoria e Testes</span>
+      </div>
+    </div>
   </section>
 
   <!-- ABA: ASSINATURA -->
@@ -243,7 +244,7 @@
 </div>
 
 <!-- NAVEGAÇÃO INFERIOR PWA -->
-<nav class="fixed bottom-0 left-0 right-0 bg-dark-900/90 backdrop-blur-xl border-t border-white/10 z-50">
+<nav class="fixed bottom-0 left-0 right-0 bg-dark-900/95 backdrop-blur-xl border-t border-white/10 z-50">
   <div class="max-w-md mx-auto flex justify-around items-center h-16 px-2">
     <button onclick="switchTab('home')" data-tab="home" class="nav-btn flex flex-col items-center gap-1 w-full py-1 text-cyan-400 transition"><i class="fa-solid fa-chart-simple text-sm"></i><span class="text-[9px] font-bold">Painel</span></button>
     <button onclick="switchTab('creatives')" data-tab="creatives" class="nav-btn flex flex-col items-center gap-1 w-full py-1 text-slate-500 transition"><i class="fa-solid fa-photo-film text-sm"></i><span class="text-[9px] font-bold">Criativos</span></button>
@@ -254,18 +255,6 @@
 </nav>
 
 <script>
-// CONFIGURAÇÃO DO META DEVELOPERS
-const META_APP_ID = "1768169631131383";
-
-window.fbAsyncInit = function() {
-  FB.init({
-    appId      : META_APP_ID,
-    cookie     : true,
-    xfbml      : true,
-    version    : 'v18.0'
-  });
-};
-
 const fmtBRL = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const fmtPct = v => (v).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
 const fmtX   = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + 'x';
@@ -296,18 +285,338 @@ function verdict(c) {
   return { kind: 'ajuste', label: 'Desempenho Moderado', icon: 'fa-sliders', tone: 'warn' };
 }
 
-const STORE_KEY = 'adpulse_state_v5';
-const state = loadState();
+const STORE_KEY = 'adpulse_state_v6';
+let state = loadState();
 let currentTF = '7d';
-let selectedAdAccountId = null;
 
 function loadState() {
   try {
     const s = JSON.parse(localStorage.getItem(STORE_KEY));
     if (s) return s;
   } catch (e) {}
-  return { paused: [], connected: { meta: false }, metaToken: null };
+  return { paused: [] };
 }
 function saveState() { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
 
-const M
+const MOCK = {
+  campaigns: [
+    { id: 'mc1', platform: 'meta', name: 'Oferta Especial - Raio 10km', objective: 'Mensagens / WhatsApp', spend: 890, roas: 4.6, ctr: 3.2, cpc: 0.62, frequency: 1.7 },
+    { id: 'mc2', platform: 'meta', name: 'Tráfego Aberto - Institucional', objective: 'Tráfego', spend: 380, roas: 0.5, ctr: 0.7, cpc: 2.90, frequency: 3.8 }
+  ],
+  creatives: [
+    { id: 'cr1', platform: 'meta', format: 'reel', title: 'Vídeo Demonstrativo Produto', ctr: 3.6, roas: 4.6, frequency: 1.7 },
+    { id: 'cr2', platform: 'meta', format: 'carrossel', title: 'Carrossel Desconto Exclusivo', ctr: 1.1, roas: 1.6, frequency: 3.8 }
+  ]
+};
+
+const FORMATS = { all: 'Todos', reel: 'Reels / Vídeo', carrossel: 'Carrossel', imagem: 'Imagem Estática' };
+const FORMAT_STYLE = { reel: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20', carrossel: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20', imagem: 'text-sky-400 bg-sky-500/10 border-sky-500/20' };
+const PLATFORM = { meta: { name: 'Meta Ads Sandbox', icon: 'fa-brands fa-facebook', color: 'text-blue-400' } };
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.add('hidden'), 2800);
+}
+
+function kpi(label, value, diag) {
+  return `<div class="bg-dark-950 p-2.5 rounded-2xl border border-white/5 text-center">
+    <span class="text-[9px] text-slate-400 font-bold block uppercase tracking-wider">${label}</span>
+    <span class="text-xs font-black ${TONE[diag.tone].text} mt-0.5 block">${value}</span>
+    <span class="text-[8px] font-semibold ${TONE[diag.tone].text} mt-0.5 block">${diag.label}</span>
+  </div>`;
+}
+
+function setTimeframe(tf) {
+  currentTF = tf;
+  document.getElementById('tf-7d').className = `text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition ${tf === '7d' ? 'bg-brand-500 text-slate-950 shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:text-slate-200'}`;
+  document.getElementById('tf-30d').className = `text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition ${tf === '30d' ? 'bg-brand-500 text-slate-950 shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:text-slate-200'}`;
+  refresh();
+}
+
+function renderSmartAlerts(campaigns) {
+  const container = document.getElementById('smart-alerts');
+  let alertsHtml = '';
+
+  campaigns.forEach(c => {
+    if (!state.paused.includes(c.id)) {
+      if (c.roas < 1.0) {
+        alertsHtml += `
+        <div class="bg-rose-500/10 border border-rose-500/30 p-3 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-triangle-exclamation text-rose-400 text-sm"></i>
+            <div>
+              <strong class="text-xs text-rose-300 font-bold block">Alerta de Desperdício</strong>
+              <span class="text-[10px] text-slate-400">"${c.name}" está com ROAS ${fmtX(c.roas)} (Prejuízo).</span>
+            </div>
+          </div>
+          <button onclick="askPause('${c.id}')" class="text-[10px] bg-rose-500 text-white font-bold px-2.5 py-1 rounded-xl whitespace-nowrap">Pausar</button>
+        </div>`;
+      } else if (c.frequency > 3.5) {
+        alertsHtml += `
+        <div class="bg-amber-500/10 border border-amber-500/30 p-3 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-rotate text-amber-400 text-sm"></i>
+            <div>
+              <strong class="text-xs text-amber-300 font-bold block">Fadiga de Público</strong>
+              <span class="text-[10px] text-slate-400">Frequência ${fmtX(c.frequency)} em "${c.name}". Renove o criativo.</span>
+            </div>
+          </div>
+        </div>`;
+      } else if (c.roas >= 3.0) {
+        alertsHtml += `
+        <div class="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-rocket text-emerald-400 text-sm"></i>
+            <div>
+              <strong class="text-xs text-emerald-300 font-bold block">Oportunidade de Escala</strong>
+              <span class="text-[10px] text-slate-400">"${c.name}" com excelente retorno (ROAS ${fmtX(c.roas)}).</span>
+            </div>
+          </div>
+        </div>`;
+      }
+    }
+  });
+
+  container.innerHTML = alertsHtml;
+}
+
+function renderSvgChart() {
+  const container = document.getElementById('svg-chart-container');
+  container.innerHTML = `
+    <svg class="w-full h-full overflow-visible" viewBox="0 0 300 100" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="cyanGlow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.0"/>
+        </linearGradient>
+      </defs>
+      <path d="M 0,80 Q 50,50 100,60 T 200,20 T 300,30 L 300,100 L 0,100 Z" fill="url(#cyanGlow)" />
+      <path d="M 0,80 Q 50,50 100,60 T 200,20 T 300,30" fill="none" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" />
+      <circle cx="100" cy="60" r="4" fill="#06b6d4" />
+      <circle cx="200" cy="20" r="4" fill="#06b6d4" />
+      <circle cx="300" cy="30" r="4" fill="#06b6d4" />
+    </svg>
+  `;
+}
+
+function renderRaioX(campaigns) {
+  const activeCamp = campaigns.filter(c => !state.paused.includes(c.id));
+  const mult = currentTF === '30d' ? 3.5 : 1.0;
+  const spend = activeCamp.reduce((s, c) => s + Math.round(c.spend * mult), 0);
+  const roas = activeCamp.length ? activeCamp.reduce((s, c) => s + c.roas * c.spend, 0) / (activeCamp.reduce((s,c)=>s+c.spend,0) || 1) : 0;
+  
+  const pausedCamp = campaigns.filter(c => state.paused.includes(c.id));
+  const savedSpend = pausedCamp.reduce((s, c) => s + Math.round(c.spend * mult), 0);
+
+  let healthScore = 100;
+  campaigns.forEach(c => {
+    if (!state.paused.includes(c.id)) {
+      if (verdict(c).kind === 'fuga') healthScore -= 30;
+      if (verdict(c).kind === 'fadiga') healthScore -= 15;
+    }
+  });
+  healthScore = Math.max(20, healthScore);
+  const scoreTone = healthScore >= 80 ? 'good' : healthScore >= 50 ? 'warn' : 'bad';
+
+  document.getElementById('raiox').innerHTML = `
+    <div class="flex justify-between items-center mb-3">
+      <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+        <i class="fa-solid fa-wallet text-cyan-400"></i> Visão Geral de Investimento
+      </span>
+      <span class="${TONE[scoreTone].bg} ${TONE[scoreTone].text} border ${TONE[scoreTone].border} text-[10px] px-2.5 py-0.5 rounded-full font-bold">
+        Saúde da Conta: ${healthScore}/100
+      </span>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5 bg-dark-950 p-3.5 rounded-2xl border border-white/5">
+      <div>
+        <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wider">Verba Empregada</span>
+        <span class="text-lg font-black text-white mt-0.5 block tracking-tight">${fmtBRL(spend)}</span>
+        <span class="text-[9px] text-slate-400 mt-0.5 block font-medium">${activeCamp.length} campanha(s) ativas</span>
+      </div>
+      <div>
+        <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wider">ROAS Consolidado</span>
+        <span class="text-lg font-black ${TONE[diagROAS(roas).tone].text} mt-0.5 block tracking-tight">${activeCamp.length ? fmtX(roas) : '—'}</span>
+        <span class="text-[9px] ${TONE[diagROAS(roas).tone].text} font-bold mt-0.5 block">${diagROAS(roas).label}</span>
+      </div>
+    </div>
+    ${savedSpend > 0 ? `
+    <div class="mt-3 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-2xl text-center flex items-center justify-center gap-2">
+      <i class="fa-solid fa-shield-halved text-emerald-400 text-xs"></i>
+      <span class="text-[11px] text-emerald-300 font-semibold">Economia Preservada: <strong>${fmtBRL(savedSpend)}</strong> retidos.</span>
+    </div>` : ''}`;
+}
+
+function renderCampaigns(campaigns) {
+  const list = document.getElementById('campaign-list');
+  const mult = currentTF === '30d' ? 3.5 : 1.0;
+  list.innerHTML = campaigns.map(c => {
+    const v = verdict(c);
+    const paused = state.paused.includes(c.id);
+    const currentSpend = Math.round(c.spend * mult);
+    const btn = paused
+      ? `<button disabled class="w-full mt-3 bg-dark-800 border border-white/5 text-emerald-400 font-bold py-3 rounded-2xl text-xs flex items-center justify-center gap-2">
+           <i class="fa-solid fa-circle-check"></i> Campanha Pausada (Economia de ${fmtBRL(currentSpend)})
+         </button>`
+      : `<button onclick="askPause('${c.id}')" class="btn-danger w-full mt-3 text-white font-bold py-3 rounded-2xl text-xs">
+           Pausar Veiculação e Preservar Verba
+         </button>`;
+    return `
+    <div class="glass-card glass-card-hover rounded-3xl p-4.5 fade-in ${paused ? 'opacity-60' : ''}">
+      <div class="flex justify-between items-start gap-2">
+        <div class="min-w-0">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="badge-chip ${TONE[v.tone].text} ${TONE[v.tone].bg} ${TONE[v.tone].border}"><i class="fa-solid ${v.icon}"></i> ${v.label}</span>
+          </div>
+          <h3 class="font-bold text-xs text-slate-100 mt-2 tracking-tight">${c.name}</h3>
+          <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-brands fa-facebook text-blue-400"></i> Meta Ads Sandbox · ${c.objective}</p>
+        </div>
+        <span class="text-xs font-black ${TONE[diagROAS(c.roas).tone].text} whitespace-nowrap">ROAS ${fmtX(c.roas)}</span>
+      </div>
+      <div class="grid grid-cols-4 gap-1.5 mt-3 pt-3 border-t border-white/5">
+        ${kpi('CTR', fmtPct(c.ctr), diagCTR(c.ctr))}
+        ${kpi('CPC', fmtBRL(c.cpc), diagCPC(c.cpc))}
+        ${kpi('Freq.', fmtX(c.frequency), diagFreq(c.frequency))}
+        ${kpi('Gasto', fmtBRL(currentSpend), diagROAS(c.roas))}
+      </div>
+      ${v.kind === 'fuga' || v.kind === 'fadiga' ? btn : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderFilters(active) {
+  document.getElementById('filters').innerHTML = Object.entries(FORMATS).map(([k, label]) =>
+    `<button onclick="setFilter('${k}')" class="text-[10px] font-bold px-3.5 py-1.5 rounded-xl whitespace-nowrap border transition
+      ${active === k ? 'bg-brand-500 border-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25' : 'bg-dark-900 border-white/5 text-slate-400 hover:text-slate-200'}">${label}</button>`
+  ).join('');
+}
+
+let currentFilter = 'all';
+function setFilter(f) { currentFilter = f; renderCreatives(); }
+
+function renderCreatives() {
+  renderFilters(currentFilter);
+  const grid = document.getElementById('creative-grid');
+  const items = MOCK.creatives.filter(c => currentFilter === 'all' || c.format === currentFilter);
+  const icon = { reel: 'fa-play', carrossel: 'fa-images', imagem: 'fa-image' };
+  grid.innerHTML = items.map(c => {
+    const fatigue = diagFreq(c.frequency);
+    return `
+    <div class="glass-card rounded-3xl p-3.5 fade-in flex flex-col justify-between">
+      <div>
+        <div class="w-full h-24 bg-dark-950 rounded-2xl flex items-center justify-center text-cyan-400 text-2xl border border-white/5 mb-2.5 shadow-inner">
+          <i class="fa-solid ${icon[c.format]}"></i>
+        </div>
+        <span class="text-[9px] px-2 py-0.5 rounded-full font-bold border ${FORMAT_STYLE[c.format]}">${FORMATS[c.format]}</span>
+        <h4 class="font-bold text-xs text-slate-100 mt-2 leading-snug tracking-tight">${c.title}</h4>
+      </div>
+      <div class="mt-3 pt-2.5 border-t border-white/5 text-[10px] space-y-1.5">
+        <div class="flex justify-between"><span class="text-slate-400">CTR</span><strong class="${TONE[diagCTR(c.ctr).tone].text}">${fmtPct(c.ctr)}</strong></div>
+        <div class="flex justify-between"><span class="text-slate-400">ROAS</span><strong class="${TONE[diagROAS(c.roas).tone].text}">${fmtX(c.roas)}</strong></div>
+        <div class="flex justify-between"><span class="text-slate-400">Frequência</span><strong class="${TONE[fatigue.tone].text}">${fmtX(c.frequency)}</strong></div>
+        <div class="mt-2"><span class="badge-chip ${TONE[fatigue.tone].text} ${TONE[fatigue.tone].bg} ${TONE[fatigue.tone].border} w-full justify-center">${fatigue.label}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCriteria() {
+  const rows = [
+    { t: 'CTR (Click-Through Rate)', tag: 'Atratividade', d: 'Mede o interesse inicial do público pelo criativo.', g: '> 2,0%: anúncio de alto engajamento.', b: '< 1,0%: baixa atração, recomenda-se novo criativo.' },
+    { t: 'CPC (Custo por Clique)', tag: 'Eficiência', d: 'Valor médio cobrado pelo tráfego gerado.', g: '< R$ 1,00: tráfego altamente rentável.', b: '> R$ 2,50: custo elevado para a conversão.' },
+    { t: 'Frequência de Exposição', tag: 'Saturação', d: 'Média de visualizações por usuário único.', g: '1,0x – 2,5x: alcance saudável.', b: '> 3,5x: fadiga de público, recomenda-se renovar a lista.' },
+    { t: 'ROAS (Retorno sobre Anúncio)', tag: 'Rentabilidade', d: 'Múltiplo de faturamento retornado sobre o investimento.', g: '≥ 3,0x: excelente taxa de retorno.', b: '< 1,0x: operação em prejuízo técnico.' }
+  ];
+  document.getElementById('criteria').innerHTML = rows.map(r => `
+    <div class="glass-card rounded-3xl p-4.5">
+      <div class="flex justify-between items-center mb-1.5">
+        <strong class="text-cyan-300 text-xs font-bold">${r.t}</strong>
+        <span class="text-[9px] font-bold bg-cyan-500/10 text-cyan-400 px-2.5 py-0.5 rounded-full border border-cyan-500/20">${r.tag}</span>
+      </div>
+      <p class="text-slate-300 text-[11px] leading-relaxed mt-1">
+        ${r.d}
+        <br><span class="text-emerald-400 font-semibold block mt-1.5">• ${r.g}</span>
+        <span class="text-rose-400 font-semibold block mt-0.5">• ${r.b}</span>
+      </p>
+    </div>`).join('');
+}
+
+function refresh() {
+  renderRaioX(MOCK.campaigns);
+  renderSmartAlerts(MOCK.campaigns);
+  renderSvgChart();
+  renderCampaigns(MOCK.campaigns);
+  renderCreatives();
+  renderCriteria();
+  document.getElementById('last-sync').textContent = 'Sincronizado às ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+let pendingPause = null;
+function askPause(id) {
+  const c = MOCK.campaigns.find(x => x.id === id);
+  pendingPause = id;
+  const mult = currentTF === '30d' ? 3.5 : 1.0;
+  document.getElementById('modal-title').textContent = 'Confirmar Interrupção de Veiculação';
+  document.getElementById('modal-text').textContent =
+    `A campanha "${c.name}" apresenta consumo de ${fmtBRL(c.spend * mult)} com retorno abaixo do parâmetro (ROAS ${fmtX(c.roas)}). Ao interromper, o consumo de verba é pausado imediatamente.`;
+  document.getElementById('modal-confirm').onclick = confirmPause;
+  document.getElementById('modal').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modal').classList.add('hidden'); pendingPause = null; }
+
+function confirmPause() {
+  const id = pendingPause;
+  closeModal();
+  if (!id) return;
+  if (!state.paused.includes(id)) state.paused.push(id);
+  saveState();
+  toast('Campanha pausada com sucesso!');
+  refresh();
+}
+
+async function shareReport() {
+  const activeCamp = MOCK.campaigns.filter(c => !state.paused.includes(c.id));
+  const mult = currentTF === '30d' ? 3.5 : 1.0;
+  const spend = activeCamp.reduce((s, c) => s + Math.round(c.spend * mult), 0);
+  const roas = activeCamp.length ? activeCamp.reduce((s, c) => s + c.roas * c.spend, 0) / (activeCamp.reduce((s,c)=>s+c.spend,0) || 1) : 0;
+  
+  const text = `📈 *Relatório Executivo AdPulse* (${currentTF === '7d' ? '7 dias' : '30 dias'}):
+• *Investimento Ativo:* ${fmtBRL(spend)}
+• *ROAS Médio:* ${fmtX(roas)}
+• *Campanhas Ativas:* ${activeCamp.length}
+• *Economia Preservada:* ${state.paused.length} campanha(s) pausada(s)
+
+_Gerado via AdPulse Performance Intelligence_`;
+
+  if (navigator.share) {
+    navigator.share({ title: 'Relatório AdPulse', text: text });
+  } else {
+    navigator.clipboard.writeText(text);
+    toast('Relatório copiado para a área de transferência!');
+  }
+}
+
+function switchTab(tab) {
+  ['home','creatives','recommendations','connect','plan'].forEach(t => {
+    document.getElementById('sec-' + t).classList.toggle('hidden', t !== tab);
+  });
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    const active = b.dataset.tab === tab;
+    b.className = `nav-btn flex flex-col items-center gap-1 w-full py-1 transition ${active ? 'text-cyan-400' : 'text-slate-500'}`;
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function installPWA() {
+  toast("Toque em 'Compartilhar' e selecione 'Adicionar à Tela Inicial'");
+}
+
+document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+
+switchTab('home');
+refresh();
+</script>
+</body>
+</html>
