@@ -3,182 +3,236 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AdPulse | Painel Estratégico de Anúncios</title>
+<title>AdPulse | Intelligence & Performance Dashboard</title>
 
 <!-- PWA Meta Tags -->
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#030712">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="AdPulse">
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1055/1055687.png">
-<link rel="manifest" href='data:application/manifest+json,{"name":"AdPulse Mobile","short_name":"AdPulse","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/1055/1055687.png","sizes":"512x512","type":"image/png"}]}'>
+<link rel="manifest" href='data:application/manifest+json,{"name":"AdPulse Performance","short_name":"AdPulse","start_url":".","display":"standalone","background_color":"#030712","theme_color":"#030712","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/1055/1055687.png","sizes":"512x512","type":"image/png"}]}'>
 
-<!-- Tailwind CSS & FontAwesome -->
+<!-- Fonts & Frameworks -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<!-- SDK Oficial do Facebook / Meta Ads -->
+<!-- Meta Ads SDK -->
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/pt_BR/sdk.js"></script>
 
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+        colors: {
+          brand: { 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
+          dark: { 950: '#030712', 900: '#0b0f19', 800: '#151c2c', 700: '#222f46' }
+        }
+      }
+    }
+  }
+</script>
+
 <style>
-  body { -webkit-tap-highlight-color: transparent; user-select: none; }
+  body {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    background-color: #030712;
+    background-image: 
+      radial-gradient(circle at 10% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 35%),
+      radial-gradient(circle at 90% 100%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+    background-attachment: fixed;
+  }
+  
   .hide-scrollbar::-webkit-scrollbar { display: none; }
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  .btn-istudio-primary {
-    background: linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);
-    transition: all .25s cubic-bezier(.4,0,.2,1);
-    box-shadow: 0 4px 14px 0 rgba(99,102,241,.35);
+  
+  .glass-card {
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
-  .btn-istudio-primary:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 6px 20px 0 rgba(99,102,241,.5); }
-  .btn-istudio-primary:active { transform: translateY(0) scale(.97); }
-  .btn-istudio-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-  .btn-istudio-danger {
-    background: linear-gradient(135deg,#ef4444 0%,#dc2626 100%);
-    transition: all .25s cubic-bezier(.4,0,.2,1);
-    box-shadow: 0 4px 14px 0 rgba(239,68,68,.35);
+
+  .glass-card-hover {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .btn-istudio-danger:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 6px 20px 0 rgba(239,68,68,.5); }
-  .btn-istudio-danger:active { transform: translateY(0) scale(.97); }
-  .btn-istudio-secondary {
-    background: rgba(30,41,59,.8);
-    border: 1px solid rgba(255,255,255,.1);
-    backdrop-filter: blur(8px);
-    transition: all .25s cubic-bezier(.4,0,.2,1);
+  .glass-card-hover:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.15);
   }
-  .btn-istudio-secondary:hover { background: rgba(51,65,85,.9); border-color: rgba(99,102,241,.4); transform: translateY(-1px); }
-  .glow { box-shadow: 0 0 24px -6px rgba(99,102,241,.45); }
-  .fade-in { animation: fadeIn .35s ease both; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-  .chip { font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 6px; border: 1px solid; display: inline-flex; align-items: center; gap: 4px; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.45);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+    box-shadow: 0 4px 18px -2px rgba(244, 63, 94, 0.35);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-danger:active { transform: scale(0.97); }
+
+  .fade-in { animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  .badge-chip {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 9999px;
+    border: 1px solid;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: 0.02em;
+  }
 </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col pb-24">
+<body class="text-slate-100 font-sans antialiased min-h-screen flex flex-col pb-24">
 
-<!-- HEADER -->
-<header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800/80 sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
-  <div class="flex items-center gap-2.5">
-    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-      <i class="fa-solid fa-chart-line text-sm"></i>
+<!-- HEADER PRINCIPAL -->
+<header class="bg-dark-900/70 backdrop-blur-xl border-b border-white/5 sticky top-0 z-40 px-4 py-3.5 flex items-center justify-between">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 border border-white/10">
+      <i class="fa-solid fa-chart-line text-base"></i>
     </div>
     <div>
-      <h1 class="font-bold text-base leading-tight tracking-tight">AdPulse Gestor</h1>
-      <p id="account-status-badge" class="text-[10px] text-slate-400 font-medium flex items-center gap-1">
-        <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span> Nenhuma conta conectada
+      <h1 class="font-extrabold text-sm tracking-tight text-white flex items-center gap-2">
+        AdPulse <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-300 border border-indigo-500/30">PRO</span>
+      </h1>
+      <p id="account-status-badge" class="text-[10px] text-slate-400 font-medium flex items-center gap-1.5 mt-0.5">
+        <span class="w-2 h-2 rounded-full bg-slate-600"></span> Nenhuma conta vinculada
       </p>
     </div>
   </div>
   <div class="flex items-center gap-2">
-    <button onclick="shareReport()" class="btn-istudio-secondary text-emerald-400 text-xs font-bold p-2 rounded-full flex items-center justify-center w-8 h-8" title="Compartilhar Relatório no WhatsApp">
-      <i class="fa-brands fa-whatsapp text-sm"></i>
+    <button onclick="shareReport()" class="p-2.5 rounded-2xl bg-dark-800/80 border border-white/10 text-emerald-400 hover:bg-dark-700 transition active:scale-95 shadow-md" title="Exportar Relatório via WhatsApp">
+      <i class="fa-brands fa-whatsapp text-base"></i>
     </button>
-    <button onclick="installPWA()" class="btn-istudio-secondary text-indigo-300 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
-      <i class="fa-solid fa-download text-[11px]"></i> Instalar
+    <button onclick="installPWA()" class="px-3.5 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold flex items-center gap-1.5 hover:bg-indigo-500/20 transition active:scale-95 shadow-md">
+      <i class="fa-solid fa-download text-[11px]"></i> App
     </button>
   </div>
 </header>
 
 <main class="max-w-md mx-auto w-full px-4 pt-4 flex-1">
 
-  <!-- SELETOR DE PERÍODO TEMPORAL -->
-  <div class="flex justify-between items-center mb-3 bg-slate-900/60 p-1.5 rounded-xl border border-slate-800/80">
-    <span class="text-[10px] font-bold text-slate-400 pl-2">Período:</span>
+  <!-- FILTRO DE JANELA TEMPORAL -->
+  <div class="flex justify-between items-center mb-4 bg-dark-900/80 backdrop-blur-md p-1.5 rounded-2xl border border-white/5 shadow-inner">
+    <span class="text-[10px] font-extrabold text-slate-400 pl-3 uppercase tracking-wider">Janela de Análise</span>
     <div class="flex gap-1">
-      <button onclick="setTimeframe('7d')" id="tf-7d" class="text-[10px] font-bold px-2.5 py-1 rounded-lg transition bg-indigo-600 text-white">7 Dias</button>
-      <button onclick="setTimeframe('30d')" id="tf-30d" class="text-[10px] font-bold px-2.5 py-1 rounded-lg transition text-slate-400 hover:text-slate-200">30 Dias</button>
+      <button onclick="setTimeframe('7d')" id="tf-7d" class="text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition bg-brand-500 text-white shadow-lg shadow-indigo-500/25">Últimos 7d</button>
+      <button onclick="setTimeframe('30d')" id="tf-30d" class="text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">Últimos 30d</button>
     </div>
   </div>
 
-  <!-- RAIO-X GERAL -->
-  <div id="raiox" class="bg-gradient-to-br from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 mb-5 shadow-xl glow fade-in"></div>
+  <!-- RAIO-X DE PERFORMANCE -->
+  <div id="raiox" class="glass-card rounded-3xl p-4 mb-5 fade-in relative overflow-hidden"></div>
 
-  <!-- ABA: INÍCIO -->
-  <section id="sec-home" class="space-y-4">
-    <div class="flex items-center justify-between">
-      <h2 class="text-sm font-bold text-slate-200 flex items-center gap-1.5">
-        <i class="fa-solid fa-layer-group text-indigo-400"></i> Desempenho por Campanha
+  <!-- ABA: CAMPANHAS (INÍCIO) -->
+  <section id="sec-home" class="space-y-3.5">
+    <div class="flex items-center justify-between px-0.5">
+      <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+        <i class="fa-solid fa-layer-group text-brand-500"></i> Campanhas em Monitoramento
       </h2>
-      <span class="text-[11px] text-slate-400" id="last-sync">—</span>
+      <span class="text-[10px] text-slate-500 font-medium" id="last-sync">—</span>
     </div>
-    <div id="campaign-list" class="space-y-3"></div>
+    <div id="campaign-list" class="space-y-3.5"></div>
   </section>
 
-  <!-- ABA: ANÚNCIOS -->
-  <section id="sec-creatives" class="hidden space-y-4">
-    <div class="flex items-center justify-between">
-      <h2 class="text-sm font-bold text-slate-200 flex items-center gap-1.5">
-        <i class="fa-solid fa-photo-film text-indigo-400"></i> Desempenho dos Anúncios
+  <!-- ABA: CRIATIVOS -->
+  <section id="sec-creatives" class="hidden space-y-3.5">
+    <div class="flex items-center justify-between px-0.5">
+      <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+        <i class="fa-solid fa-photo-film text-brand-500"></i> Performance por Criativo
       </h2>
-      <span class="text-[11px] text-slate-400">Formatos</span>
     </div>
-    <div id="filters" class="flex gap-2 overflow-x-auto hide-scrollbar"></div>
+    <div id="filters" class="flex gap-2 overflow-x-auto hide-scrollbar pb-1"></div>
     <div id="creative-grid" class="grid grid-cols-2 gap-3"></div>
   </section>
 
-  <!-- ABA: RECOMENDAÇÕES -->
-  <section id="sec-recommendations" class="hidden space-y-4">
-    <h2 class="text-sm font-bold text-slate-200 flex items-center gap-1.5">
-      <i class="fa-solid fa-lightbulb text-amber-400"></i> Critérios Técnicos de Diagnóstico
+  <!-- ABA: DIAGNÓSTICO -->
+  <section id="sec-recommendations" class="hidden space-y-3.5">
+    <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2 px-0.5">
+      <i class="fa-solid fa-sliders text-amber-400"></i> Métrica & Parâmetros de Eficiência
     </h2>
     <div id="criteria" class="space-y-2.5"></div>
   </section>
 
-  <!-- ABA: CONECTAR -->
-  <section id="sec-connect" class="hidden space-y-4">
-    <div class="bg-slate-900 border border-indigo-500/40 rounded-2xl p-5 shadow-lg text-center">
-      <h3 class="text-base font-bold text-slate-100">Conectar conta de anúncios</h3>
-      <p class="text-xs text-slate-300 mt-1">Sincronize seus KPIs em tempo real com o Meta Ads.</p>
+  <!-- ABA: CONEXÕES -->
+  <section id="sec-connect" class="hidden space-y-3.5">
+    <div class="glass-card rounded-3xl p-6 text-center">
+      <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-brand-500 mx-auto mb-3 text-2xl shadow-lg shadow-indigo-500/10">
+        <i class="fa-solid fa-link"></i>
+      </div>
+      <h3 class="text-base font-bold text-slate-100">Integração de Contas de Anúncios</h3>
+      <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">Conecte sua conta do Meta Ads para sincronização automática de métricas via SDK Oficial.</p>
     </div>
-    <div id="platform-cards" class="space-y-3"></div>
+    <div id="platform-cards" class="space-y-3.5"></div>
   </section>
 
-  <!-- ABA: PLANO -->
-  <section id="sec-plan" class="hidden space-y-4">
-    <div class="bg-gradient-to-b from-indigo-950/80 to-slate-900 border-2 border-indigo-500 rounded-2xl p-5 shadow-xl text-center glow">
-      <span class="bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase">🔥 Plano Pro Gestor</span>
-      <h3 class="text-xl font-black text-indigo-200 mt-3">R$ 180 / 3 meses</h3>
-      <p class="text-xs text-slate-400 mt-1">Monitoramento de KPIs e alertas 24/7</p>
-      <ul class="text-left text-xs text-slate-300 mt-4 space-y-1.5">
-        <li><i class="fa-solid fa-check text-emerald-400 mr-1.5"></i> Meta Ads e Google Ads em um só painel</li>
-        <li><i class="fa-solid fa-check text-emerald-400 mr-1.5"></i> Alertas de Fadiga e Fuga de Orçamento</li>
-        <li><i class="fa-solid fa-check text-emerald-400 mr-1.5"></i> Pausa de campanhas em 1 toque</li>
+  <!-- ABA: ASSINATURA -->
+  <section id="sec-plan" class="hidden space-y-3.5">
+    <div class="glass-card rounded-3xl p-6 text-center border-indigo-500/30 relative overflow-hidden">
+      <div class="absolute -right-12 -top-12 w-36 h-36 bg-indigo-500/20 rounded-full blur-3xl"></div>
+      <span class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-indigo-500/30">
+        Plano Gestor Profissional
+      </span>
+      <h3 class="text-3xl font-black text-white mt-5">R$ 180 <span class="text-xs font-semibold text-slate-400">/ trimestre</span></h3>
+      <p class="text-xs text-slate-400 mt-1">Diagnóstico inteligente contínuo para evitar desperdício de verba.</p>
+      <ul class="text-left text-xs text-slate-300 mt-6 space-y-3 border-t border-white/5 pt-5">
+        <li class="flex items-center gap-3"><i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> Monitoramento unificado Meta Ads</li>
+        <li class="flex items-center gap-3"><i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> Detecção automática de Fadiga de Anúncio</li>
+        <li class="flex items-center gap-3"><i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> Interrupção de campanhas em 1 clique</li>
       </ul>
-      <button onclick="toast('Redirecionando para o pagamento seguro...')" class="btn-istudio-primary w-full text-white font-bold py-3.5 rounded-full text-xs mt-5">
-        Ativar Assinatura Agora
+      <button onclick="toast('Redirecionando para o checkout seguro...')" class="btn-primary w-full text-white font-bold py-3.5 rounded-2xl text-xs mt-6">
+        Ativar Licença de Gestão
       </button>
     </div>
   </section>
 </main>
 
-<!-- MODAL DE CONFIRMAÇÃO -->
-<div id="modal" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-4">
-  <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 w-full max-w-md fade-in">
-    <h4 id="modal-title" class="font-bold text-base"></h4>
-    <p id="modal-text" class="text-xs text-slate-300 mt-1.5 leading-relaxed"></p>
-    <div class="grid grid-cols-2 gap-2 mt-5">
-      <button onclick="closeModal()" class="btn-istudio-secondary text-slate-200 font-bold py-2.5 rounded-full text-xs">Cancelar</button>
-      <button id="modal-confirm" class="btn-istudio-danger text-white font-bold py-2.5 rounded-full text-xs">Confirmar</button>
+<!-- MODAL CONFIRMAÇÃO -->
+<div id="modal" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-4">
+  <div class="glass-card rounded-3xl p-6 w-full max-w-md fade-in border-white/10">
+    <h4 id="modal-title" class="font-bold text-base text-slate-100"></h4>
+    <p id="modal-text" class="text-xs text-slate-400 mt-2 leading-relaxed"></p>
+    <div class="grid grid-cols-2 gap-3 mt-6">
+      <button onclick="closeModal()" class="py-3 rounded-2xl bg-dark-800 text-slate-300 font-bold text-xs hover:bg-dark-700 transition active:scale-95">Cancelar</button>
+      <button id="modal-confirm" class="btn-danger text-white font-bold py-3 rounded-2xl text-xs">Confirmar Interrupção</button>
     </div>
   </div>
 </div>
 
 <!-- TOAST NOTIFICATION -->
-<div id="toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-[70] bg-slate-800 border border-indigo-500/40 text-xs text-slate-100 px-4 py-2.5 rounded-full shadow-xl fade-in"></div>
+<div id="toast" class="hidden fixed top-5 left-1/2 -translate-x-1/2 z-[70] bg-dark-900 border border-indigo-500/40 text-xs text-slate-100 px-4 py-3 rounded-2xl shadow-2xl fade-in flex items-center gap-2.5 backdrop-blur-xl">
+  <i class="fa-solid fa-circle-info text-indigo-400 text-sm"></i> <span id="toast-msg"></span>
+</div>
 
-<!-- NAVEGAÇÃO INFERIOR -->
-<nav class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 z-50">
-  <div class="max-w-md mx-auto flex justify-around items-center h-16 px-1">
-    <button onclick="switchTab('home')" data-tab="home" class="nav-btn flex flex-col items-center gap-1 w-full py-1"><i class="fa-solid fa-house text-sm"></i><span class="text-[8px] font-medium">Início</span></button>
-    <button onclick="switchTab('creatives')" data-tab="creatives" class="nav-btn flex flex-col items-center gap-1 w-full py-1"><i class="fa-solid fa-photo-film text-sm"></i><span class="text-[8px] font-medium">Anúncios</span></button>
-    <button onclick="switchTab('recommendations')" data-tab="recommendations" class="nav-btn flex flex-col items-center gap-1 w-full py-1"><i class="fa-solid fa-lightbulb text-sm"></i><span class="text-[8px] font-medium">Recomendações</span></button>
-    <button onclick="switchTab('connect')" data-tab="connect" class="nav-btn flex flex-col items-center gap-1 w-full py-1"><i class="fa-solid fa-plug text-sm"></i><span class="text-[8px] font-medium">Conectar</span></button>
-    <button onclick="switchTab('plan')" data-tab="plan" class="nav-btn flex flex-col items-center gap-1 w-full py-1"><i class="fa-solid fa-gem text-sm"></i><span class="text-[8px] font-medium">Plano</span></button>
+<!-- NAVEGAÇÃO INFERIOR PWA -->
+<nav class="fixed bottom-0 left-0 right-0 bg-dark-900/80 backdrop-blur-xl border-t border-white/5 z-50">
+  <div class="max-w-md mx-auto flex justify-around items-center h-16 px-2">
+    <button onclick="switchTab('home')" data-tab="home" class="nav-btn flex flex-col items-center gap-1 w-full py-1 text-brand-500 transition"><i class="fa-solid fa-chart-simple text-sm"></i><span class="text-[9px] font-bold">Painel</span></button>
+    <button onclick="switchTab('creatives')" data-tab="creatives" class="nav-btn flex flex-col items-center gap-1 w-full py-1 text-slate-500 transition"><i class="fa-solid fa-photo-film text-sm"></i><span class="text-[9px] font-bold">Criativos</span></button>
+    <button onclick="switchTab('recommendations')" data-tab="recommendations" class="nav-btn flex flex-col items-center gap-1 w-full py-1 text-slate-500 transition"><i class="fa-solid fa-sliders text-sm"></i><span class="text-[9px] font-bold">Métricas</span></button>
+    <button onclick="switchTab('connect')" data-tab="connect" class="nav-btn flex flex-col items-center gap-1 w-full py-1 text-slate-500 transition"><i class="fa-solid fa-plug text-sm"></i><span class="text-[9px] font-bold">Conexão</span></button>
+    <button onclick="switchTab('plan')" data-tab="plan" class="nav-btn flex flex-col items-center gap-1 w-full py-1 text-slate-500 transition"><i class="fa-solid fa-gem text-sm"></i><span class="text-[9px] font-bold">Plano</span></button>
   </div>
 </nav>
 
 <script>
-// =========================================================
-// CONFIGURAÇÃO DO META DEVELOPERS (ID VINCULADO)
-// =========================================================
+// CONFIGURAÇÃO DO META DEVELOPERS
 const META_APP_ID = "1768169631131383";
 
 window.fbAsyncInit = function() {
@@ -190,37 +244,37 @@ window.fbAsyncInit = function() {
   });
 };
 
-const fmtBRL  = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-const fmtPct  = v => (v).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
-const fmtX    = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + 'x';
+const fmtBRL = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmtPct = v => (v).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
+const fmtX   = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + 'x';
 
 const RULES = {
-  ctr:  { good: 2.0, bad: 1.0 },      
-  cpc:  { good: 1.0, bad: 2.5 },      
-  freq: { good: 2.5, bad: 3.5 },      
-  roas: { good: 3.0, bad: 1.0 }       
+  ctr:  { good: 2.0, bad: 1.0 },
+  cpc:  { good: 1.0, bad: 2.5 },
+  freq: { good: 2.5, bad: 3.5 },
+  roas: { good: 3.0, bad: 1.0 }
 };
 
 const TONE = {
   good: { text: 'text-emerald-400', border: 'border-emerald-500/30', bg: 'bg-emerald-500/10' },
   warn: { text: 'text-amber-400',   border: 'border-amber-500/30',   bg: 'bg-amber-500/10' },
-  bad:  { text: 'text-red-400',     border: 'border-red-500/30',     bg: 'bg-red-500/10' }
+  bad:  { text: 'text-rose-400',    border: 'border-rose-500/30',    bg: 'bg-rose-500/10' }
 };
 
-function diagCTR(v)  { return v > RULES.ctr.good ? { label: 'Atração Alta', tone: 'good' } : v < RULES.ctr.bad  ? { label: 'Pouco Interesse', tone: 'bad' } : { label: 'Atração Média', tone: 'warn' }; }
-function diagCPC(v)  { return v < RULES.cpc.good ? { label: 'Econômico', tone: 'good' } : v > RULES.cpc.bad  ? { label: 'Muito Caro', tone: 'bad' } : { label: 'Custo Razoável', tone: 'warn' }; }
-function diagFreq(v) { return v > RULES.freq.bad  ? { label: 'Fadiga do Anúncio', tone: 'bad' } : v > RULES.freq.good ? { label: 'Atenção: Repetição', tone: 'warn' } : { label: 'Cobertura Ideal', tone: 'good' }; }
-function diagROAS(v){ return v >= RULES.roas.good ? { label: 'Campeã', tone: 'good' } : v < RULES.roas.bad  ? { label: 'Fuga de Orçamento', tone: 'bad' } : { label: 'Em Ajuste', tone: 'warn' }; }
+function diagCTR(v)  { return v > RULES.ctr.good ? { label: 'CTR Excelente', tone: 'good' } : v < RULES.ctr.bad  ? { label: 'CTR Baixo', tone: 'bad' } : { label: 'CTR Regular', tone: 'warn' }; }
+function diagCPC(v)  { return v < RULES.cpc.good ? { label: 'CPC Otimizado', tone: 'good' } : v > RULES.cpc.bad  ? { label: 'CPC Elevado', tone: 'bad' } : { label: 'CPC Médio', tone: 'warn' }; }
+function diagFreq(v) { return v > RULES.freq.bad  ? { label: 'Fadiga Alta', tone: 'bad' } : v > RULES.freq.good ? { label: 'Atenção Frequência', tone: 'warn' } : { label: 'Frequência Ideal', tone: 'good' }; }
+function diagROAS(v){ return v >= RULES.roas.good ? { label: 'Escala Recomendada', tone: 'good' } : v < RULES.roas.bad  ? { label: 'Incompatível / Fuga', tone: 'bad' } : { label: 'Em Análise', tone: 'warn' }; }
 
 function verdict(c) {
   const r = diagROAS(c.roas);
-  if (r.tone === 'bad') return { kind: 'fuga', label: 'Fuga de Orçamento (Desperdício)', icon: 'fa-circle-exclamation', tone: 'bad' };
-  if (diagFreq(c.frequency).tone === 'bad') return { kind: 'fadiga', label: 'Fadiga do Anúncio', icon: 'fa-rotate', tone: 'warn' };
-  if (r.tone === 'good') return { kind: 'campea', label: 'Campanha Campeã (Aumentar Verba)', icon: 'fa-circle-check', tone: 'good' };
-  return { kind: 'ajuste', label: 'Em Ajuste (Monitorar)', icon: 'fa-sliders', tone: 'warn' };
+  if (r.tone === 'bad') return { kind: 'fuga', label: 'Desperdício de Verba', icon: 'fa-triangle-exclamation', tone: 'bad' };
+  if (diagFreq(c.frequency).tone === 'bad') return { kind: 'fadiga', label: 'Fadiga de Criativo', icon: 'fa-rotate', tone: 'warn' };
+  if (r.tone === 'good') return { kind: 'campea', label: 'Campanha de Alta Performance', icon: 'fa-circle-check', tone: 'good' };
+  return { kind: 'ajuste', label: 'Desempenho Moderado', icon: 'fa-sliders', tone: 'warn' };
 }
 
-const STORE_KEY = 'adpulse_state_v2';
+const STORE_KEY = 'adpulse_state_v3';
 const state = loadState();
 let currentTF = '7d';
 
@@ -229,7 +283,7 @@ function loadState() {
     const s = JSON.parse(localStorage.getItem(STORE_KEY));
     if (s) return s;
   } catch (e) {}
-  return { paused: [], connected: { meta: false, google: false }, metaToken: null };
+  return { paused: [], connected: { meta: false }, metaToken: null };
 }
 function saveState() { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
 
@@ -238,18 +292,14 @@ const API = {
     if (state.connected.meta && state.metaToken) {
       try {
         return await fetchRealMetaCampaigns(state.metaToken);
-      } catch(e) {
-        console.error("Erro ao puxar dados reais:", e);
-      }
+      } catch(e) { console.error("Erro ao carregar dados do Meta:", e); }
     }
-
-    const mult = currentTF === '30d' ? 3.8 : 1.0;
+    const mult = currentTF === '30d' ? 3.5 : 1.0;
     return MOCK.campaigns
       .filter(c => state.connected[c.platform])
       .map(c => ({ ...c, spend: Math.round(c.spend * mult) }));
   },
   async fetchCreatives() {
-    await delay(150);
     return MOCK.creatives.filter(c => state.connected[c.platform]);
   },
   async pauseCampaign(id) {
@@ -295,39 +345,39 @@ async function fetchRealMetaCampaigns(token) {
 
 const MOCK = {
   campaigns: [
-    { id: 'mc1', platform: 'meta',   name: 'Promoção Final de Semana - Raio 5km', objective: 'Mensagens', spend: 980,  roas: 4.8, ctr: 3.4, cpc: 0.55, cpa: 4.20, frequency: 1.8 },
-    { id: 'mc2', platform: 'meta',   name: 'Tráfego Geral - Banner Institucional', objective: 'Tráfego',  spend: 420,  roas: 0.4, ctr: 0.6, cpc: 3.10, cpa: 0,    frequency: 3.9 }
+    { id: 'mc1', platform: 'meta', name: 'Oferta Especial - Raio 10km', objective: 'Mensagens / WhatsApp', spend: 890, roas: 4.6, ctr: 3.2, cpc: 0.62, frequency: 1.7 },
+    { id: 'mc2', platform: 'meta', name: 'Tráfego Aberto - Institucional', objective: 'Tráfego', spend: 380, roas: 0.5, ctr: 0.7, cpc: 2.90, frequency: 3.8 }
   ],
   creatives: [
-    { id: 'cr1', platform: 'meta', format: 'reel',      title: 'Demonstração do Produto', ctr: 3.8, roas: 4.8, frequency: 1.8 },
-    { id: 'cr2', platform: 'meta', format: 'carrossel', title: 'Banner 20% de Desconto',  ctr: 1.2, roas: 1.8, frequency: 3.9 }
+    { id: 'cr1', platform: 'meta', format: 'reel', title: 'Vídeo Demonstrativo Produto', ctr: 3.6, roas: 4.6, frequency: 1.7 },
+    { id: 'cr2', platform: 'meta', format: 'carrossel', title: 'Carrossel Desconto Exclusivo', ctr: 1.1, roas: 1.6, frequency: 3.8 }
   ]
 };
 
-const FORMATS = { all: 'Todos', reel: 'Vídeo Reel', carrossel: 'Carrossel', imagem: 'Imagem' };
-const FORMAT_STYLE = { reel: 'text-purple-400 bg-purple-500/10 border-purple-500/20', carrossel: 'text-blue-400 bg-blue-500/10 border-blue-500/20', imagem: 'text-sky-400 bg-sky-500/10 border-sky-500/20' };
+const FORMATS = { all: 'Todos', reel: 'Reels / Vídeo', carrossel: 'Carrossel', imagem: 'Imagem Estática' };
+const FORMAT_STYLE = { reel: 'text-purple-400 bg-purple-500/10 border-purple-500/20', carrossel: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20', imagem: 'text-sky-400 bg-sky-500/10 border-sky-500/20' };
 const PLATFORM = { meta: { name: 'Meta Ads', icon: 'fa-brands fa-facebook', color: 'text-blue-400', btn: 'Conectar Meta Ads' } };
 
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 function toast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.remove('hidden');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.remove('hidden');
   clearTimeout(toast._t);
-  toast._t = setTimeout(() => t.classList.add('hidden'), 2600);
+  toast._t = setTimeout(() => t.classList.add('hidden'), 2800);
 }
-function chip(text, tone) { return `<span class="chip ${TONE[tone].text} ${TONE[tone].bg} ${TONE[tone].border}">${text}</span>`; }
+
 function kpi(label, value, diag) {
-  return `<div class="bg-slate-950 p-2 rounded-lg border border-slate-800 text-center">
-    <span class="text-[9px] text-slate-400 block font-bold">${label}</span>
-    <span class="text-xs font-black ${TONE[diag.tone].text}">${value}</span>
-    <span class="text-[8px] ${TONE[diag.tone].text} block mt-0.5">${diag.label}</span>
+  return `<div class="bg-dark-950/90 p-2.5 rounded-2xl border border-white/5 text-center">
+    <span class="text-[9px] text-slate-400 font-bold block uppercase tracking-wider">${label}</span>
+    <span class="text-xs font-black ${TONE[diag.tone].text} mt-0.5 block">${value}</span>
+    <span class="text-[8px] font-semibold ${TONE[diag.tone].text} mt-0.5 block">${diag.label}</span>
   </div>`;
 }
 
 function setTimeframe(tf) {
   currentTF = tf;
-  document.getElementById('tf-7d').className = `text-[10px] font-bold px-2.5 py-1 rounded-lg transition ${tf === '7d' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'}`;
-  document.getElementById('tf-30d').className = `text-[10px] font-bold px-2.5 py-1 rounded-lg transition ${tf === '30d' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'}`;
+  document.getElementById('tf-7d').className = `text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition ${tf === '7d' ? 'bg-brand-500 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-slate-200'}`;
+  document.getElementById('tf-30d').className = `text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition ${tf === '30d' ? 'bg-brand-500 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-slate-200'}`;
   refresh();
 }
 
@@ -351,36 +401,36 @@ function renderRaioX(campaigns) {
 
   document.getElementById('raiox').innerHTML = `
     <div class="flex justify-between items-center mb-3">
-      <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
-        <i class="fa-solid fa-wallet text-indigo-400"></i> Raio-X dos Investimentos
+      <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+        <i class="fa-solid fa-wallet text-brand-500"></i> Visão Geral de Investimento
       </span>
-      <span class="${TONE[scoreTone].bg} ${TONE[scoreTone].text} border ${TONE[scoreTone].border} text-[10px] px-2.5 py-1 rounded-full font-bold">
-        Saúde da Conta: ${healthScore}/100
+      <span class="${TONE[scoreTone].bg} ${TONE[scoreTone].text} border ${TONE[scoreTone].border} text-[10px] px-2.5 py-0.5 rounded-full font-bold">
+        Índice de Saúde: ${healthScore}/100
       </span>
     </div>
-    <div class="grid grid-cols-2 gap-2 bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+    <div class="grid grid-cols-2 gap-2.5 bg-dark-950/80 p-3.5 rounded-2xl border border-white/5">
       <div>
-        <span class="text-[10px] text-slate-400 block font-semibold">Investimento Ativo</span>
-        <span class="text-lg font-black text-slate-100">${fmtBRL(spend)}</span>
-        <span class="text-[9px] text-slate-400 mt-1 block">${activeCamp.length} campanha(s) rodando</span>
+        <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wider">Verba Empregada</span>
+        <span class="text-lg font-black text-white mt-0.5 block tracking-tight">${fmtBRL(spend)}</span>
+        <span class="text-[9px] text-slate-400 mt-0.5 block font-medium">${activeCamp.length} campanha(s) ativas</span>
       </div>
       <div>
-        <span class="text-[10px] text-slate-400 block font-semibold">ROAS Médio</span>
-        <span class="text-lg font-black ${TONE[diagROAS(roas).tone].text}">${activeCamp.length ? fmtX(roas) : '—'}</span>
-        <span class="text-[9px] ${TONE[diagROAS(roas).tone].text} mt-1 block font-medium">${diagROAS(roas).label}</span>
+        <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wider">ROAS Consolidado</span>
+        <span class="text-lg font-black ${TONE[diagROAS(roas).tone].text} mt-0.5 block tracking-tight">${activeCamp.length ? fmtX(roas) : '—'}</span>
+        <span class="text-[9px] ${TONE[diagROAS(roas).tone].text} font-bold mt-0.5 block">${diagROAS(roas).label}</span>
       </div>
     </div>
     ${savedSpend > 0 ? `
-    <div class="mt-2.5 bg-emerald-950/40 border border-emerald-500/30 p-2 rounded-xl text-center flex items-center justify-center gap-2">
-      <i class="fa-solid fa-piggy-bank text-emerald-400 text-xs"></i>
-      <span class="text-[11px] text-emerald-300 font-semibold">Economia Ativa: <strong>${fmtBRL(savedSpend)}</strong> evitado em desperdício!</span>
+    <div class="mt-3 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-2xl text-center flex items-center justify-center gap-2">
+      <i class="fa-solid fa-shield-halved text-emerald-400 text-xs"></i>
+      <span class="text-[11px] text-emerald-300 font-semibold">Economia Preservada: <strong>${fmtBRL(savedSpend)}</strong> retidos.</span>
     </div>` : ''}`;
 }
 
 function renderCampaigns(campaigns) {
   const list = document.getElementById('campaign-list');
   if (!campaigns.length) {
-    list.innerHTML = emptyState('Conecte uma conta de anúncios para ver suas campanhas.');
+    list.innerHTML = emptyState('Conecte sua conta do Meta Ads para sincronizar suas campanhas.');
     return;
   }
   list.innerHTML = campaigns.map(c => {
@@ -388,28 +438,28 @@ function renderCampaigns(campaigns) {
     const paused = state.paused.includes(c.id);
     const plat = PLATFORM[c.platform];
     const btn = paused
-      ? `<button disabled class="w-full mt-3.5 bg-slate-800 border border-slate-700 text-emerald-400 font-bold py-2.5 rounded-full text-xs flex items-center justify-center gap-1.5">
-           <i class="fa-solid fa-circle-check"></i> Campanha Pausada (Economizando ${fmtBRL(c.spend)})
+      ? `<button disabled class="w-full mt-3 bg-dark-800/80 border border-white/5 text-emerald-400 font-bold py-3 rounded-2xl text-xs flex items-center justify-center gap-2">
+           <i class="fa-solid fa-circle-check"></i> Campanha Pausada (Economia de ${fmtBRL(c.spend)})
          </button>`
-      : `<button onclick="askPause('${c.id}')" class="btn-istudio-danger w-full mt-3.5 text-white font-bold py-2.5 rounded-full text-xs">
-           Pausar Campanha e Evitar Perdas
+      : `<button onclick="askPause('${c.id}')" class="btn-danger w-full mt-3 text-white font-bold py-3 rounded-2xl text-xs">
+           Pausar Veiculação e Preservar Verba
          </button>`;
     return `
-    <div class="bg-slate-900 border ${TONE[v.tone].border} rounded-2xl p-4 shadow-md fade-in ${paused ? 'opacity-65' : ''}">
+    <div class="glass-card glass-card-hover rounded-3xl p-4.5 fade-in ${paused ? 'opacity-60' : ''}">
       <div class="flex justify-between items-start gap-2">
         <div class="min-w-0">
           <div class="flex flex-wrap gap-1.5">
-            <span class="chip ${TONE[v.tone].text} ${TONE[v.tone].bg} ${TONE[v.tone].border}"><i class="fa-solid ${v.icon}"></i> ${v.label}</span>
+            <span class="badge-chip ${TONE[v.tone].text} ${TONE[v.tone].bg} ${TONE[v.tone].border}"><i class="fa-solid ${v.icon}"></i> ${v.label}</span>
           </div>
-          <h3 class="font-bold text-xs text-slate-100 mt-1.5">${c.name}</h3>
+          <h3 class="font-bold text-xs text-slate-100 mt-2 tracking-tight">${c.name}</h3>
           <p class="text-[10px] text-slate-400 mt-0.5"><i class="${plat.icon} ${plat.color}"></i> ${plat.name} · ${c.objective}</p>
         </div>
         <span class="text-xs font-black ${TONE[diagROAS(c.roas).tone].text} whitespace-nowrap">ROAS ${fmtX(c.roas)}</span>
       </div>
-      <div class="grid grid-cols-4 gap-1.5 mt-3 pt-2.5 border-t border-slate-800">
+      <div class="grid grid-cols-4 gap-1.5 mt-3 pt-3 border-t border-white/5">
         ${kpi('CTR', fmtPct(c.ctr), diagCTR(c.ctr))}
         ${kpi('CPC', fmtBRL(c.cpc), diagCPC(c.cpc))}
-        ${kpi('Frequência', fmtX(c.frequency), diagFreq(c.frequency))}
+        ${kpi('Freq.', fmtX(c.frequency), diagFreq(c.frequency))}
         ${kpi('Gasto', fmtBRL(c.spend), diagROAS(c.roas))}
       </div>
       ${v.kind === 'fuga' || v.kind === 'fadiga' ? btn : ''}
@@ -419,8 +469,8 @@ function renderCampaigns(campaigns) {
 
 function renderFilters(active) {
   document.getElementById('filters').innerHTML = Object.entries(FORMATS).map(([k, label]) =>
-    `<button onclick="setFilter('${k}')" class="text-[10px] font-bold px-3 py-1.5 rounded-full whitespace-nowrap border transition
-      ${active === k ? 'bg-indigo-500 border-indigo-400 text-white' : 'bg-slate-900 border-slate-700 text-slate-400'}">${label}</button>`
+    `<button onclick="setFilter('${k}')" class="text-[10px] font-bold px-3.5 py-1.5 rounded-xl whitespace-nowrap border transition
+      ${active === k ? 'bg-brand-500 border-indigo-400 text-white shadow-lg shadow-indigo-500/25' : 'bg-dark-900 border-white/5 text-slate-400 hover:text-slate-200'}">${label}</button>`
   ).join('');
 }
 
@@ -432,45 +482,48 @@ function renderCreatives() {
   renderFilters(currentFilter);
   const grid = document.getElementById('creative-grid');
   const items = creativesCache.filter(c => currentFilter === 'all' || c.format === currentFilter);
-  if (!creativesCache.length) { grid.innerHTML = emptyState('Nenhum anúncio disponível. Conecte uma conta.', true); return; }
-  if (!items.length) { grid.innerHTML = emptyState('Nenhum anúncio neste formato.', true); return; }
+  if (!creativesCache.length) { grid.innerHTML = emptyState('Nenhum anúncio identificado.', true); return; }
+  if (!items.length) { grid.innerHTML = emptyState('Nenhum criativo neste formato.', true); return; }
 
   const icon = { reel: 'fa-play', carrossel: 'fa-images', imagem: 'fa-image' };
   grid.innerHTML = items.map(c => {
     const fatigue = diagFreq(c.frequency);
     return `
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 fade-in">
-      <div class="w-full h-24 bg-slate-950 rounded-xl flex items-center justify-center text-indigo-400 text-2xl border border-slate-800 mb-2">
-        <i class="fa-solid ${icon[c.format]}"></i>
+    <div class="glass-card rounded-3xl p-3.5 fade-in flex flex-col justify-between">
+      <div>
+        <div class="w-full h-24 bg-dark-950 rounded-2xl flex items-center justify-center text-brand-500 text-2xl border border-white/5 mb-2.5 shadow-inner">
+          <i class="fa-solid ${icon[c.format]}"></i>
+        </div>
+        <span class="text-[9px] px-2 py-0.5 rounded-full font-bold border ${FORMAT_STYLE[c.format]}">${FORMATS[c.format]}</span>
+        <h4 class="font-bold text-xs text-slate-100 mt-2 leading-snug tracking-tight">${c.title}</h4>
       </div>
-      <span class="text-[9px] px-2 py-0.5 rounded-full font-bold border ${FORMAT_STYLE[c.format]}">${FORMATS[c.format]}</span>
-      <h4 class="font-bold text-xs text-slate-100 mt-1 leading-snug">${c.title}</h4>
-      <div class="mt-2 pt-2 border-t border-slate-800 text-[10px] space-y-1">
+      <div class="mt-3 pt-2.5 border-t border-white/5 text-[10px] space-y-1.5">
         <div class="flex justify-between"><span class="text-slate-400">CTR</span><strong class="${TONE[diagCTR(c.ctr).tone].text}">${fmtPct(c.ctr)}</strong></div>
         <div class="flex justify-between"><span class="text-slate-400">ROAS</span><strong class="${TONE[diagROAS(c.roas).tone].text}">${fmtX(c.roas)}</strong></div>
         <div class="flex justify-between"><span class="text-slate-400">Frequência</span><strong class="${TONE[fatigue.tone].text}">${fmtX(c.frequency)}</strong></div>
+        <div class="mt-2"><span class="badge-chip ${TONE[fatigue.tone].text} ${TONE[fatigue.tone].bg} ${TONE[fatigue.tone].border} w-full justify-center">${fatigue.label}</span></div>
       </div>
-      <span class="chip mt-2 ${TONE[fatigue.tone].text} ${TONE[fatigue.tone].bg} ${TONE[fatigue.tone].border}">${fatigue.label}</span>
     </div>`;
   }).join('');
 }
 
 function renderCriteria() {
   const rows = [
-    { t: 'CTR (Taxa de Clique)', tag: 'Atratividade', d: 'Mede a % de pessoas que clicaram ao ver o anúncio.', g: '> 2,0%: anúncio atraente e rentável.', b: '< 1,0%: oferta ou arte fraca, precisa mudar.' },
-    { t: 'CPC (Custo por Clique)', tag: 'Eficiência', d: 'Quanto a plataforma cobra por cada clique.', g: '< R$ 1,00: tráfego barato e eficiente.', b: '> R$ 2,50: tráfego caro consumindo o orçamento.' },
-    { t: 'Frequência (Fadiga)', tag: 'Repetição', d: 'Média de vezes que a mesma pessoa viu o anúncio.', g: '1,0x – 2,5x: cobertura ideal.', b: '> 3,5x: público cansado, troque vídeo ou arte.' },
-    { t: 'ROAS (Retorno)', tag: 'Resultado', d: 'Quanto volta em faturamento para cada R$ 1 investido.', g: '≥ 3,0x: campanha campeã.', b: '< 1,0x: fuga de orçamento, pausar ou revisar.' }
+    { t: 'CTR (Click-Through Rate)', tag: 'Atratividade', d: 'Mede o interesse inicial do público pelo criativo.', g: '> 2,0%: anúncio de alto engajamento.', b: '< 1,0%: baixa atração, recomenda-se novo criativo.' },
+    { t: 'CPC (Custo por Clique)', tag: 'Eficiência', d: 'Valor médio cobrado pelo tráfego gerado.', g: '< R$ 1,00: tráfego altamente rentável.', b: '> R$ 2,50: custo elevado para a conversão.' },
+    { t: 'Frequência de Exposição', tag: 'Saturação', d: 'Média de visualizações por usuário único.', g: '1,0x – 2,5x: alcance saudável.', b: '> 3,5x: fadiga de público, recomenda-se renovar a lista.' },
+    { t: 'ROAS (Retorno sobre Anúncio)', tag: 'Rentabilidade', d: 'Múltiplo de faturamento retornado sobre o investimento.', g: '≥ 3,0x: excelente taxa de retorno.', b: '< 1,0x: operação em prejuízo técnico.' }
   ];
   document.getElementById('criteria').innerHTML = rows.map(r => `
-    <div class="bg-slate-900/90 border border-indigo-500/20 rounded-2xl p-4">
+    <div class="glass-card rounded-3xl p-4.5">
       <div class="flex justify-between items-center mb-1.5">
-        <strong class="text-indigo-300 text-xs">${r.t}</strong>
-        <span class="text-[10px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded">${r.tag}</span>
+        <strong class="text-indigo-300 text-xs font-bold">${r.t}</strong>
+        <span class="text-[9px] font-bold bg-indigo-500/10 text-indigo-400 px-2.5 py-0.5 rounded-full border border-indigo-500/20">${r.tag}</span>
       </div>
-      <p class="text-slate-300 text-[11px] leading-relaxed">${r.d}
-        <br><span class="text-emerald-400 font-semibold">• ${r.g}</span>
-        <br><span class="text-red-400 font-semibold">• ${r.b}</span>
+      <p class="text-slate-300 text-[11px] leading-relaxed mt-1">
+        ${r.d}
+        <br><span class="text-emerald-400 font-semibold block mt-1.5">• ${r.g}</span>
+        <span class="text-rose-400 font-semibold block mt-0.5">• ${r.b}</span>
       </p>
     </div>`).join('');
 }
@@ -479,20 +532,20 @@ function renderPlatforms() {
   document.getElementById('platform-cards').innerHTML = Object.entries(PLATFORM).map(([key, p]) => {
     const on = state.connected[key];
     const action = on
-      ? `<div class="p-3 bg-emerald-950/50 border border-emerald-500/30 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center justify-between">
-           <span><i class="fa-solid fa-circle-check mr-1"></i> Conta conectada</span>
-           <button onclick="disconnect('${key}')" class="text-[10px] text-slate-400 underline">Desconectar</button>
+      ? `<div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center justify-between">
+           <span><i class="fa-solid fa-circle-check mr-2"></i> Conexão Ativa</span>
+           <button onclick="disconnect('${key}')" class="text-[10px] text-slate-400 hover:text-rose-400 underline transition">Desconectar</button>
          </div>`
-      : `<button onclick="connect('${key}')" class="btn-istudio-primary w-full text-white font-bold py-3 rounded-full text-xs flex items-center justify-center gap-2">
-           <i class="${p.icon} text-sm"></i> ${p.btn}
+      : `<button onclick="connect('${key}')" class="btn-primary w-full text-white font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2">
+           <i class="${p.icon} text-base"></i> ${p.btn}
          </button>`;
     return `
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="w-10 h-10 rounded-full bg-slate-950 border border-slate-800 flex items-center justify-center ${p.color} text-lg"><i class="${p.icon}"></i></div>
+    <div class="glass-card rounded-3xl p-4.5">
+      <div class="flex items-center gap-3.5 mb-4">
+        <div class="w-11 h-11 rounded-2xl bg-dark-950 border border-white/5 flex items-center justify-center ${p.color} text-xl shadow-inner"><i class="${p.icon}"></i></div>
         <div>
-          <h3 class="font-bold text-sm">${p.name}</h3>
-          <p class="text-[10px] text-slate-400">${on ? 'Sincronizado' : 'Não conectado'}</p>
+          <h3 class="font-bold text-sm text-white">${p.name}</h3>
+          <p class="text-[10px] text-slate-400 mt-0.5">${on ? 'Sincronizado via Graph API' : 'Pendente de autenticação'}</p>
         </div>
       </div>
       ${action}
@@ -501,8 +554,8 @@ function renderPlatforms() {
 }
 
 function emptyState(text, compact) {
-  return `<div class="bg-slate-900 border border-dashed border-slate-700 rounded-2xl ${compact ? 'p-4 col-span-2' : 'p-6'} text-center text-xs text-slate-400">
-    <i class="fa-solid fa-plug text-indigo-400 text-xl mb-2 block"></i>${text}
+  return `<div class="glass-card rounded-3xl border-dashed ${compact ? 'p-4 col-span-2' : 'p-6'} text-center text-xs text-slate-400">
+    <i class="fa-solid fa-plug-circle-exclamation text-indigo-400 text-2xl mb-2 block"></i>${text}
   </div>`;
 }
 
@@ -510,8 +563,8 @@ function renderHeaderStatus() {
   const badge = document.getElementById('account-status-badge');
   const names = Object.keys(state.connected).filter(k => state.connected[k]).map(k => PLATFORM[k].name);
   badge.innerHTML = names.length
-    ? `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> ${names.join(' + ')} conectado`
-    : `<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span> Nenhuma conta conectada`;
+    ? `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> ${names.join(' + ')} Ativo`
+    : `<span class="w-2 h-2 rounded-full bg-slate-600"></span> Nenhuma conta vinculada`;
 }
 
 async function refresh() {
@@ -523,16 +576,16 @@ async function refresh() {
   renderCreatives();
   renderCriteria();
   renderPlatforms();
-  document.getElementById('last-sync').textContent = 'Atualizado ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  document.getElementById('last-sync').textContent = 'Sincronizado às ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 }
 
 let pendingPause = null;
 function askPause(id) {
   const c = MOCK.campaigns.find(x => x.id === id);
   pendingPause = id;
-  document.getElementById('modal-title').textContent = 'Pausar campanha?';
+  document.getElementById('modal-title').textContent = 'Confirmar Interrupção de Veiculação';
   document.getElementById('modal-text').textContent =
-    `"${c.name}" está gastando ${fmtBRL(c.spend)} com ROAS ${fmtX(c.roas)}. Ao pausar, o consumo de verba para imediatamente. Você pode reativá-la depois no Meta Ads.`;
+    `A campanha "${c.name}" apresenta consumo de ${fmtBRL(c.spend)} com retorno abaixo do parâmetro (ROAS ${fmtX(c.roas)}). Ao interromper, o consumo de verba é pausado imediatamente.`;
   document.getElementById('modal-confirm').onclick = confirmPause;
   document.getElementById('modal').classList.remove('hidden');
 }
@@ -545,14 +598,14 @@ async function confirmPause() {
   await API.pauseCampaign(id);
   if (!state.paused.includes(id)) state.paused.push(id);
   saveState();
-  toast('Campanha pausada com sucesso!');
+  toast('Campanha pausada no Meta Ads!');
   refresh();
 }
 
 function connect(platform) {
   if (platform === 'meta') {
     if (typeof FB === 'undefined') {
-      toast('Aguarde o SDK do Facebook carregar...');
+      toast('Carregando SDK da Meta...');
       return;
     }
     FB.login(function(response) {
@@ -560,10 +613,10 @@ function connect(platform) {
         state.connected.meta = true;
         state.metaToken = response.authResponse.accessToken;
         saveState();
-        toast('✓ Meta Ads conectado com sucesso!');
+        toast('Meta Ads vinculado com sucesso!');
         refresh();
       } else {
-        toast('Login cancelado pelo usuário.');
+        toast('Autenticação cancelada.');
       }
     }, {scope: 'ads_read,ads_management'});
   }
@@ -583,13 +636,13 @@ async function shareReport() {
   const spend = activeCamp.reduce((s, c) => s + c.spend, 0);
   const roas = activeCamp.length ? activeCamp.reduce((s, c) => s + c.roas * c.spend, 0) / (spend || 1) : 0;
   
-  const text = `📊 *Relatório Executivo AdPulse* (${currentTF === '7d' ? '7 dias' : '30 dias'}):
+  const text = `📈 *Relatório Executivo AdPulse* (${currentTF === '7d' ? '7 dias' : '30 dias'}):
 • *Investimento Ativo:* ${fmtBRL(spend)}
-• *Retorno Geral (ROAS):* ${fmtX(roas)}
+• *ROAS Médio:* ${fmtX(roas)}
 • *Campanhas Ativas:* ${activeCamp.length}
-• *Economia de Fuga:* ${state.paused.length} campanha(s) pausada(s)
+• *Economia Preservada:* ${state.paused.length} campanha(s) pausada(s)
 
-_Gerado via AdPulse Gestor_`;
+_Gerado via AdPulse Performance Intelligence_`;
 
   if (navigator.share) {
     navigator.share({ title: 'Relatório AdPulse', text: text });
@@ -605,13 +658,13 @@ function switchTab(tab) {
   });
   document.querySelectorAll('.nav-btn').forEach(b => {
     const active = b.dataset.tab === tab;
-    b.className = `nav-btn flex flex-col items-center gap-1 w-full py-1 transition ${active ? 'text-indigo-400' : 'text-slate-400'}`;
+    b.className = `nav-btn flex flex-col items-center gap-1 w-full py-1 transition ${active ? 'text-brand-500' : 'text-slate-500'}`;
   });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function installPWA() {
-  toast("Toque em 'Compartilhar' e escolha 'Adicionar à tela inicial'");
+  toast("Toque em 'Compartilhar' e selecione 'Adicionar à Tela Inicial'");
 }
 
 document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
