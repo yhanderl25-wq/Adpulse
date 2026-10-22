@@ -6,12 +6,12 @@
 <title>AdPulse | Intelligence & Performance Dashboard</title>
 
 <!-- PWA Meta Tags -->
-<meta name="theme-color" content="#030712">
+<meta name="theme-color" content="#05070a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="AdPulse">
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1055/1055687.png">
-<link rel="manifest" href='data:application/manifest+json,{"name":"AdPulse Performance","short_name":"AdPulse","start_url":".","display":"standalone","background_color":"#030712","theme_color":"#030712","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/1055/1055687.png","sizes":"512x512","type":"image/png"}]}'>
+<link rel="manifest" href='data:application/manifest+json,{"name":"AdPulse Performance","short_name":"AdPulse","start_url":".","display":"standalone","background_color":"#05070a","theme_color":"#05070a","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/1055/1055687.png","sizes":"512x512","type":"image/png"}]}'>
 
 <!-- Fonts & Frameworks -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,8 +30,9 @@
       extend: {
         fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
         colors: {
-          brand: { 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
-          dark: { 950: '#030712', 900: '#0b0f19', 800: '#151c2c', 700: '#222f46' }
+          brand: { 500: '#06b6d4', 600: '#0891b2', 700: '#0e7490' },
+          violet: { 500: '#6366f1', 600: '#4f46e5' },
+          dark: { 950: '#05070a', 900: '#0a0e17', 800: '#121824', 700: '#1e293b' }
         }
       }
     }
@@ -42,10 +43,10 @@
   body {
     -webkit-tap-highlight-color: transparent;
     user-select: none;
-    background-color: #030712;
+    background-color: #05070a;
     background-image: 
-      radial-gradient(circle at 10% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 35%),
-      radial-gradient(circle at 90% 100%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+      radial-gradient(circle at 0% 0%, rgba(6, 182, 212, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.12) 0%, transparent 45%);
     background-attachment: fixed;
   }
   
@@ -53,32 +54,32 @@
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   
   .glass-card {
-    background: rgba(15, 23, 42, 0.65);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    background: rgba(10, 14, 23, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
   }
 
   .glass-card-hover {
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .glass-card-hover:hover {
-    border-color: rgba(99, 102, 241, 0.4);
+    border-color: rgba(6, 182, 212, 0.4);
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.15);
+    box-shadow: 0 15px 35px -5px rgba(6, 182, 212, 0.15);
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.45);
+    background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #6366f1 100%);
+    box-shadow: 0 4px 25px -2px rgba(6, 182, 212, 0.4);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .btn-primary:active { transform: scale(0.97); }
 
   .btn-danger {
     background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-    box-shadow: 0 4px 18px -2px rgba(244, 63, 94, 0.35);
+    box-shadow: 0 4px 20px -2px rgba(244, 63, 94, 0.4);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .btn-danger:active { transform: scale(0.97); }
@@ -89,7 +90,7 @@
   .badge-chip {
     font-size: 10px;
     font-weight: 700;
-    padding: 3px 9px;
+    padding: 3px 10px;
     border-radius: 9999px;
     border: 1px solid;
     display: inline-flex;
@@ -102,14 +103,14 @@
 <body class="text-slate-100 font-sans antialiased min-h-screen flex flex-col pb-24">
 
 <!-- HEADER PRINCIPAL -->
-<header class="bg-dark-900/70 backdrop-blur-xl border-b border-white/5 sticky top-0 z-40 px-4 py-3.5 flex items-center justify-between">
+<header class="bg-dark-900/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-40 px-4 py-3.5 flex items-center justify-between">
   <div class="flex items-center gap-3">
-    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 border border-white/10">
+    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25 border border-white/20">
       <i class="fa-solid fa-chart-line text-base"></i>
     </div>
     <div>
       <h1 class="font-extrabold text-sm tracking-tight text-white flex items-center gap-2">
-        AdPulse <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-300 border border-indigo-500/30">PRO</span>
+        AdPulse <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">PRO</span>
       </h1>
       <p id="account-status-badge" class="text-[10px] text-slate-400 font-medium flex items-center gap-1.5 mt-0.5">
         <span class="w-2 h-2 rounded-full bg-slate-600"></span> Nenhuma conta vinculada
@@ -117,10 +118,10 @@
     </div>
   </div>
   <div class="flex items-center gap-2">
-    <button onclick="shareReport()" class="p-2.5 rounded-2xl bg-dark-800/80 border border-white/10 text-emerald-400 hover:bg-dark-700 transition active:scale-95 shadow-md" title="Exportar Relatório via WhatsApp">
+    <button onclick="shareReport()" class="p-2.5 rounded-2xl bg-dark-800 border border-white/10 text-emerald-400 hover:bg-dark-700 transition active:scale-95 shadow-md" title="Exportar Relatório via WhatsApp">
       <i class="fa-brands fa-whatsapp text-base"></i>
     </button>
-    <button onclick="installPWA()" class="px-3.5 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold flex items-center gap-1.5 hover:bg-indigo-500/20 transition active:scale-95 shadow-md">
+    <button onclick="installPWA()" class="px-3.5 py-2 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-bold flex items-center gap-1.5 hover:bg-cyan-500/20 transition active:scale-95 shadow-md">
       <i class="fa-solid fa-download text-[11px]"></i> App
     </button>
   </div>
@@ -129,10 +130,10 @@
 <main class="max-w-md mx-auto w-full px-4 pt-4 flex-1">
 
   <!-- FILTRO DE JANELA TEMPORAL -->
-  <div class="flex justify-between items-center mb-4 bg-dark-900/80 backdrop-blur-md p-1.5 rounded-2xl border border-white/5 shadow-inner">
+  <div class="flex justify-between items-center mb-4 bg-dark-900/80 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 shadow-inner">
     <span class="text-[10px] font-extrabold text-slate-400 pl-3 uppercase tracking-wider">Janela de Análise</span>
     <div class="flex gap-1">
-      <button onclick="setTimeframe('7d')" id="tf-7d" class="text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition bg-brand-500 text-white shadow-lg shadow-indigo-500/25">Últimos 7d</button>
+      <button onclick="setTimeframe('7d')" id="tf-7d" class="text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition bg-brand-500 text-slate-950 shadow-lg shadow-cyan-500/25">Últimos 7d</button>
       <button onclick="setTimeframe('30d')" id="tf-30d" class="text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">Últimos 30d</button>
     </div>
   </div>
@@ -144,7 +145,7 @@
   <section id="sec-home" class="space-y-3.5">
     <div class="flex items-center justify-between px-0.5">
       <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-        <i class="fa-solid fa-layer-group text-brand-500"></i> Campanhas em Monitoramento
+        <i class="fa-solid fa-layer-group text-cyan-400"></i> Campanhas em Monitoramento
       </h2>
       <span class="text-[10px] text-slate-500 font-medium" id="last-sync">—</span>
     </div>
@@ -155,7 +156,7 @@
   <section id="sec-creatives" class="hidden space-y-3.5">
     <div class="flex items-center justify-between px-0.5">
       <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-        <i class="fa-solid fa-photo-film text-brand-500"></i> Performance por Criativo
+        <i class="fa-solid fa-photo-film text-cyan-400"></i> Performance por Criativo
       </h2>
     </div>
     <div id="filters" class="flex gap-2 overflow-x-auto hide-scrollbar pb-1"></div>
@@ -173,7 +174,7 @@
   <!-- ABA: CONEXÕES -->
   <section id="sec-connect" class="hidden space-y-3.5">
     <div class="glass-card rounded-3xl p-6 text-center">
-      <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-brand-500 mx-auto mb-3 text-2xl shadow-lg shadow-indigo-500/10">
+      <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mx-auto mb-3 text-2xl shadow-lg shadow-cyan-500/10">
         <i class="fa-solid fa-link"></i>
       </div>
       <h3 class="text-base font-bold text-slate-100">Integração de Contas de Anúncios</h3>
@@ -184,19 +185,19 @@
 
   <!-- ABA: ASSINATURA -->
   <section id="sec-plan" class="hidden space-y-3.5">
-    <div class="glass-card rounded-3xl p-6 text-center border-indigo-500/30 relative overflow-hidden">
-      <div class="absolute -right-12 -top-12 w-36 h-36 bg-indigo-500/20 rounded-full blur-3xl"></div>
-      <span class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-indigo-500/30">
+    <div class="glass-card rounded-3xl p-6 text-center border-cyan-500/30 relative overflow-hidden">
+      <div class="absolute -right-12 -top-12 w-36 h-36 bg-cyan-500/20 rounded-full blur-3xl"></div>
+      <span class="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 text-slate-950 text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-cyan-500/20">
         Plano Gestor Profissional
       </span>
       <h3 class="text-3xl font-black text-white mt-5">R$ 180 <span class="text-xs font-semibold text-slate-400">/ trimestre</span></h3>
       <p class="text-xs text-slate-400 mt-1">Diagnóstico inteligente contínuo para evitar desperdício de verba.</p>
-      <ul class="text-left text-xs text-slate-300 mt-6 space-y-3 border-t border-white/5 pt-5">
+      <ul class="text-left text-xs text-slate-300 mt-6 space-y-3 border-t border-white/10 pt-5">
         <li class="flex items-center gap-3"><i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> Monitoramento unificado Meta Ads</li>
         <li class="flex items-center gap-3"><i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> Detecção automática de Fadiga de Anúncio</li>
         <li class="flex items-center gap-3"><i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> Interrupção de campanhas em 1 clique</li>
       </ul>
-      <button onclick="toast('Redirecionando para o checkout seguro...')" class="btn-primary w-full text-white font-bold py-3.5 rounded-2xl text-xs mt-6">
+      <button onclick="toast('Redirecionando para o checkout seguro...')" class="btn-primary w-full text-slate-950 font-black py-3.5 rounded-2xl text-xs mt-6">
         Ativar Licença de Gestão
       </button>
     </div>
@@ -216,14 +217,14 @@
 </div>
 
 <!-- TOAST NOTIFICATION -->
-<div id="toast" class="hidden fixed top-5 left-1/2 -translate-x-1/2 z-[70] bg-dark-900 border border-indigo-500/40 text-xs text-slate-100 px-4 py-3 rounded-2xl shadow-2xl fade-in flex items-center gap-2.5 backdrop-blur-xl">
-  <i class="fa-solid fa-circle-info text-indigo-400 text-sm"></i> <span id="toast-msg"></span>
+<div id="toast" class="hidden fixed top-5 left-1/2 -translate-x-1/2 z-[70] bg-dark-900 border border-cyan-500/40 text-xs text-slate-100 px-4 py-3 rounded-2xl shadow-2xl fade-in flex items-center gap-2.5 backdrop-blur-xl">
+  <i class="fa-solid fa-circle-info text-cyan-400 text-sm"></i> <span id="toast-msg"></span>
 </div>
 
 <!-- NAVEGAÇÃO INFERIOR PWA -->
-<nav class="fixed bottom-0 left-0 right-0 bg-dark-900/80 backdrop-blur-xl border-t border-white/5 z-50">
+<nav class="fixed bottom-0 left-0 right-0 bg-dark-900/90 backdrop-blur-xl border-t border-white/10 z-50">
   <div class="max-w-md mx-auto flex justify-around items-center h-16 px-2">
-    <button onclick="switchTab('home')" data-tab="home" class="nav-btn flex flex-col items-center gap-1 w-full py-1 text-brand-500 transition"><i class="fa-solid fa-chart-simple text-sm"></i><span class="text-[9px] font-bold">Painel</span></button>
+    <button onclick="switchTab('home')" data-tab="home" class="nav-btn flex flex-col items-center gap-1 w-full py-1 text-cyan-400 transition"><i class="fa-solid fa-chart-simple text-sm"></i><span class="text-[9px] font-bold">Painel</span></button>
     <button onclick="switchTab('creatives')" data-tab="creatives" class="nav-btn flex flex-col items-center gap-1 w-full py-1 text-slate-500 transition"><i class="fa-solid fa-photo-film text-sm"></i><span class="text-[9px] font-bold">Criativos</span></button>
     <button onclick="switchTab('recommendations')" data-tab="recommendations" class="nav-btn flex flex-col items-center gap-1 w-full py-1 text-slate-500 transition"><i class="fa-solid fa-sliders text-sm"></i><span class="text-[9px] font-bold">Métricas</span></button>
     <button onclick="switchTab('connect')" data-tab="connect" class="nav-btn flex flex-col items-center gap-1 w-full py-1 text-slate-500 transition"><i class="fa-solid fa-plug text-sm"></i><span class="text-[9px] font-bold">Conexão</span></button>
@@ -355,7 +356,7 @@ const MOCK = {
 };
 
 const FORMATS = { all: 'Todos', reel: 'Reels / Vídeo', carrossel: 'Carrossel', imagem: 'Imagem Estática' };
-const FORMAT_STYLE = { reel: 'text-purple-400 bg-purple-500/10 border-purple-500/20', carrossel: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20', imagem: 'text-sky-400 bg-sky-500/10 border-sky-500/20' };
+const FORMAT_STYLE = { reel: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20', carrossel: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20', imagem: 'text-sky-400 bg-sky-500/10 border-sky-500/20' };
 const PLATFORM = { meta: { name: 'Meta Ads', icon: 'fa-brands fa-facebook', color: 'text-blue-400', btn: 'Conectar Meta Ads' } };
 
 function toast(msg) {
@@ -367,7 +368,7 @@ function toast(msg) {
 }
 
 function kpi(label, value, diag) {
-  return `<div class="bg-dark-950/90 p-2.5 rounded-2xl border border-white/5 text-center">
+  return `<div class="bg-dark-950 p-2.5 rounded-2xl border border-white/5 text-center">
     <span class="text-[9px] text-slate-400 font-bold block uppercase tracking-wider">${label}</span>
     <span class="text-xs font-black ${TONE[diag.tone].text} mt-0.5 block">${value}</span>
     <span class="text-[8px] font-semibold ${TONE[diag.tone].text} mt-0.5 block">${diag.label}</span>
@@ -376,8 +377,8 @@ function kpi(label, value, diag) {
 
 function setTimeframe(tf) {
   currentTF = tf;
-  document.getElementById('tf-7d').className = `text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition ${tf === '7d' ? 'bg-brand-500 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-slate-200'}`;
-  document.getElementById('tf-30d').className = `text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition ${tf === '30d' ? 'bg-brand-500 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-slate-200'}`;
+  document.getElementById('tf-7d').className = `text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition ${tf === '7d' ? 'bg-brand-500 text-slate-950 shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:text-slate-200'}`;
+  document.getElementById('tf-30d').className = `text-[11px] font-bold px-3.5 py-1.5 rounded-xl transition ${tf === '30d' ? 'bg-brand-500 text-slate-950 shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:text-slate-200'}`;
   refresh();
 }
 
@@ -402,13 +403,13 @@ function renderRaioX(campaigns) {
   document.getElementById('raiox').innerHTML = `
     <div class="flex justify-between items-center mb-3">
       <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-        <i class="fa-solid fa-wallet text-brand-500"></i> Visão Geral de Investimento
+        <i class="fa-solid fa-wallet text-cyan-400"></i> Visão Geral de Investimento
       </span>
       <span class="${TONE[scoreTone].bg} ${TONE[scoreTone].text} border ${TONE[scoreTone].border} text-[10px] px-2.5 py-0.5 rounded-full font-bold">
         Índice de Saúde: ${healthScore}/100
       </span>
     </div>
-    <div class="grid grid-cols-2 gap-2.5 bg-dark-950/80 p-3.5 rounded-2xl border border-white/5">
+    <div class="grid grid-cols-2 gap-2.5 bg-dark-950 p-3.5 rounded-2xl border border-white/5">
       <div>
         <span class="text-[10px] text-slate-400 font-semibold block uppercase tracking-wider">Verba Empregada</span>
         <span class="text-lg font-black text-white mt-0.5 block tracking-tight">${fmtBRL(spend)}</span>
@@ -438,7 +439,7 @@ function renderCampaigns(campaigns) {
     const paused = state.paused.includes(c.id);
     const plat = PLATFORM[c.platform];
     const btn = paused
-      ? `<button disabled class="w-full mt-3 bg-dark-800/80 border border-white/5 text-emerald-400 font-bold py-3 rounded-2xl text-xs flex items-center justify-center gap-2">
+      ? `<button disabled class="w-full mt-3 bg-dark-800 border border-white/5 text-emerald-400 font-bold py-3 rounded-2xl text-xs flex items-center justify-center gap-2">
            <i class="fa-solid fa-circle-check"></i> Campanha Pausada (Economia de ${fmtBRL(c.spend)})
          </button>`
       : `<button onclick="askPause('${c.id}')" class="btn-danger w-full mt-3 text-white font-bold py-3 rounded-2xl text-xs">
@@ -470,7 +471,7 @@ function renderCampaigns(campaigns) {
 function renderFilters(active) {
   document.getElementById('filters').innerHTML = Object.entries(FORMATS).map(([k, label]) =>
     `<button onclick="setFilter('${k}')" class="text-[10px] font-bold px-3.5 py-1.5 rounded-xl whitespace-nowrap border transition
-      ${active === k ? 'bg-brand-500 border-indigo-400 text-white shadow-lg shadow-indigo-500/25' : 'bg-dark-900 border-white/5 text-slate-400 hover:text-slate-200'}">${label}</button>`
+      ${active === k ? 'bg-brand-500 border-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25' : 'bg-dark-900 border-white/5 text-slate-400 hover:text-slate-200'}">${label}</button>`
   ).join('');
 }
 
@@ -491,7 +492,7 @@ function renderCreatives() {
     return `
     <div class="glass-card rounded-3xl p-3.5 fade-in flex flex-col justify-between">
       <div>
-        <div class="w-full h-24 bg-dark-950 rounded-2xl flex items-center justify-center text-brand-500 text-2xl border border-white/5 mb-2.5 shadow-inner">
+        <div class="w-full h-24 bg-dark-950 rounded-2xl flex items-center justify-center text-cyan-400 text-2xl border border-white/5 mb-2.5 shadow-inner">
           <i class="fa-solid ${icon[c.format]}"></i>
         </div>
         <span class="text-[9px] px-2 py-0.5 rounded-full font-bold border ${FORMAT_STYLE[c.format]}">${FORMATS[c.format]}</span>
@@ -517,8 +518,8 @@ function renderCriteria() {
   document.getElementById('criteria').innerHTML = rows.map(r => `
     <div class="glass-card rounded-3xl p-4.5">
       <div class="flex justify-between items-center mb-1.5">
-        <strong class="text-indigo-300 text-xs font-bold">${r.t}</strong>
-        <span class="text-[9px] font-bold bg-indigo-500/10 text-indigo-400 px-2.5 py-0.5 rounded-full border border-indigo-500/20">${r.tag}</span>
+        <strong class="text-cyan-300 text-xs font-bold">${r.t}</strong>
+        <span class="text-[9px] font-bold bg-cyan-500/10 text-cyan-400 px-2.5 py-0.5 rounded-full border border-cyan-500/20">${r.tag}</span>
       </div>
       <p class="text-slate-300 text-[11px] leading-relaxed mt-1">
         ${r.d}
@@ -536,7 +537,7 @@ function renderPlatforms() {
            <span><i class="fa-solid fa-circle-check mr-2"></i> Conexão Ativa</span>
            <button onclick="disconnect('${key}')" class="text-[10px] text-slate-400 hover:text-rose-400 underline transition">Desconectar</button>
          </div>`
-      : `<button onclick="connect('${key}')" class="btn-primary w-full text-white font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2">
+      : `<button onclick="connect('${key}')" class="btn-primary w-full text-slate-950 font-black py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2">
            <i class="${p.icon} text-base"></i> ${p.btn}
          </button>`;
     return `
@@ -555,7 +556,7 @@ function renderPlatforms() {
 
 function emptyState(text, compact) {
   return `<div class="glass-card rounded-3xl border-dashed ${compact ? 'p-4 col-span-2' : 'p-6'} text-center text-xs text-slate-400">
-    <i class="fa-solid fa-plug-circle-exclamation text-indigo-400 text-2xl mb-2 block"></i>${text}
+    <i class="fa-solid fa-plug-circle-exclamation text-cyan-400 text-2xl mb-2 block"></i>${text}
   </div>`;
 }
 
@@ -658,7 +659,7 @@ function switchTab(tab) {
   });
   document.querySelectorAll('.nav-btn').forEach(b => {
     const active = b.dataset.tab === tab;
-    b.className = `nav-btn flex flex-col items-center gap-1 w-full py-1 transition ${active ? 'text-brand-500' : 'text-slate-500'}`;
+    b.className = `nav-btn flex flex-col items-center gap-1 w-full py-1 transition ${active ? 'text-cyan-400' : 'text-slate-500'}`;
   });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
